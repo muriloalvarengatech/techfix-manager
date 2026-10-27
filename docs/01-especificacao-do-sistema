@@ -1,0 +1,517 @@
+# TechFix Manager
+## Especificação inicial do sistema
+
+**Projeto:** Projeto Integrado Multidisciplinar II (PIM II)  
+**Curso:** Análise e Desenvolvimento de Sistemas  
+**Versão do documento:** 1.0  
+**Data:** 27 de outubro de 2026  
+**Status:** Especificação inicial para validação  
+**Linguagem de programação prevista:** C  
+**Banco de dados previsto:** SQLite, sujeito à validação do ambiente de desenvolvimento  
+**Interface prevista:** Terminal
+
+---
+
+## 1. Introdução
+
+O TechFix Manager é um sistema proposto para apoiar a gestão operacional de uma empresa fictícia especializada em manutenção e suporte técnico de equipamentos eletrônicos, denominada TechFix.
+
+A solução será desenvolvida em linguagem C, com interface de terminal, e terá como finalidade centralizar informações de clientes, equipamentos, ordens de serviço, diagnósticos, orçamentos, estoque de peças, pagamentos e entregas.
+
+Este documento estabelece a base inicial do projeto, definindo seu escopo, seus objetivos, seus usuários, os requisitos funcionais e não funcionais e as principais regras de negócio. Também servirá como referência para a modelagem UML, a estruturação do banco de dados, a implementação e os testes.
+
+A especificação será atualizada quando decisões de projeto forem revisadas ou novas necessidades forem identificadas. As funcionalidades descritas neste documento representam requisitos previstos e não devem ser consideradas implementadas antes de sua validação no programa.
+
+## 2. Caracterização da organização
+
+### 2.1. Organização
+
+A TechFix é uma empresa fictícia que atua na manutenção e no suporte técnico de equipamentos eletrônicos. Seu processo operacional envolve o recebimento dos equipamentos, o cadastro dos clientes, a avaliação técnica, a elaboração de orçamentos, a execução dos serviços e a devolução dos equipamentos aos clientes.
+
+### 2.2. Problema identificado
+
+A ausência de um sistema centralizado pode dificultar a organização dos cadastros, o acompanhamento dos atendimentos, o controle de peças e a consulta ao histórico de serviços.
+
+A dispersão de informações também pode ocasionar retrabalho, inconsistências nos registros, dificuldade para identificar o andamento de uma manutenção e falhas no controle dos pagamentos e das entregas.
+
+### 2.3. Justificativa
+
+O desenvolvimento do TechFix Manager busca demonstrar como uma solução computacional pode contribuir para a organização dos processos de uma assistência técnica.
+
+A centralização dos registros poderá facilitar a consulta das informações, melhorar a rastreabilidade dos atendimentos e apoiar o controle dos recursos utilizados na manutenção.
+
+O projeto também permite aplicar conhecimentos de programação estruturada, engenharia de software, modelagem de dados, sistemas de informação, redes, segurança e responsabilidade social.
+
+## 3. Objetivos
+
+### 3.1. Objetivo geral
+
+Desenvolver uma aplicação em linguagem C para apoiar o gerenciamento do ciclo de manutenção de equipamentos eletrônicos, abrangendo o cadastro de clientes e equipamentos, o controle das ordens de serviço, os registros técnicos, o estoque, os pagamentos e os relatórios operacionais.
+
+### 3.2. Objetivos específicos
+
+- Cadastrar e consultar clientes.
+- Cadastrar equipamentos e associá-los aos respectivos clientes.
+- Abrir, consultar e acompanhar ordens de serviço.
+- Registrar diagnósticos técnicos e orçamentos.
+- Controlar peças e movimentações de estoque.
+- Registrar pagamentos vinculados aos atendimentos.
+- Registrar a conclusão e a entrega dos equipamentos.
+- Consultar históricos de clientes, equipamentos e ordens de serviço.
+- Gerar relatórios básicos para acompanhamento operacional.
+- Manter os dados persistidos entre execuções do programa.
+- Aplicar validações e regras de integridade aos registros.
+- Considerar privacidade, segurança da informação, usabilidade e inclusão digital.
+
+## 4. Escopo do sistema
+
+### 4.1. Funcionalidades previstas
+
+O sistema deverá contemplar os seguintes módulos:
+
+**a) Clientes:** cadastro, listagem e consulta dos dados de contato.
+
+**b) Equipamentos:** cadastro dos equipamentos, identificação de suas características e associação ao cliente responsável.
+
+**c) Ordens de serviço:** abertura de atendimentos, identificação do equipamento, consulta e acompanhamento do status.
+
+**d) Diagnósticos e orçamentos:** registro dos problemas identificados, descrição dos serviços necessários e valores estimados.
+
+**e) Estoque:** cadastro de peças, consulta de saldo e registro de entradas e saídas.
+
+**f) Pagamentos:** registro de valores recebidos, datas e formas de pagamento associados às ordens de serviço.
+
+**g) Entregas:** registro da conclusão do atendimento e da devolução do equipamento.
+
+**h) Histórico e relatórios:** consulta dos atendimentos anteriores e emissão de relatórios básicos de operação.
+
+**i) Persistência:** armazenamento dos registros em SQLite, caso a integração seja viável no ambiente C escolhido.
+
+### 4.2. Limites do projeto
+
+A versão inicial será uma aplicação de terminal executada localmente.
+
+Não fazem parte do escopo inicial:
+
+- Aplicação web ou aplicativo móvel.
+- Integração com instituições bancárias.
+- Emissão fiscal oficial.
+- Integração com sistemas externos de fornecedores.
+- Infraestrutura corporativa distribuída em produção.
+- Autenticação e autorização completas antes de serem especificadas e implementadas.
+
+Esses itens poderão ser considerados em evoluções futuras, desde que não comprometam a conclusão do escopo acadêmico principal.
+
+### 4.3. Premissas técnicas
+
+- O programa será escrito em C.
+- A interface será baseada em menus de terminal.
+- O código será organizado em funções e módulos com responsabilidades definidas.
+- SQLite será a primeira opção de persistência a ser avaliada.
+- O sistema deverá validar entradas antes de executar operações críticas.
+- A documentação e os diagramas deverão corresponder ao comportamento efetivamente implementado.
+
+## 5. Atores e responsabilidades
+
+### 5.1. Funcionário
+
+Responsável pelas atividades administrativas e pelo fluxo de atendimento. Poderá cadastrar clientes e equipamentos, abrir ordens de serviço, consultar atendimentos, registrar orçamentos, controlar pagamentos e entregas e emitir relatórios.
+
+### 5.2. Técnico
+
+Responsável pelas atividades técnicas. Poderá consultar ordens de serviço, registrar diagnósticos, informar peças utilizadas e atualizar o andamento dos serviços.
+
+### 5.3. Observação sobre controle de acesso
+
+Os atores representam os perfis operacionais previstos para o sistema. A existência desses perfis no modelo não significa que a autenticação ou as permissões já estejam implementadas.
+
+A solução de identificação dos usuários e a aplicação efetiva das permissões deverão ser especificadas antes de serem consideradas concluídas.
+
+## 6. Requisitos funcionais
+
+| ID | Descrição | Prioridade |
+|---|---|---|
+| RF01 | O sistema deverá permitir cadastrar clientes. | Alta |
+| RF02 | O sistema deverá permitir listar e consultar clientes. | Alta |
+| RF03 | O sistema deverá permitir cadastrar equipamentos associados a clientes existentes. | Alta |
+| RF04 | O sistema deverá permitir abrir ordens de serviço para equipamentos cadastrados. | Alta |
+| RF05 | O sistema deverá permitir consultar ordens de serviço por identificador e status. | Alta |
+| RF06 | O sistema deverá permitir registrar diagnósticos técnicos. | Alta |
+| RF07 | O sistema deverá permitir registrar orçamentos vinculados às ordens. | Alta |
+| RF08 | O sistema deverá permitir atualizar o status das ordens conforme as regras de transição. | Alta |
+| RF09 | O sistema deverá permitir cadastrar peças e consultar o saldo de estoque. | Alta |
+| RF10 | O sistema deverá registrar movimentações de estoque relacionadas à utilização de peças. | Alta |
+| RF11 | O sistema deverá permitir registrar pagamentos associados às ordens de serviço. | Alta |
+| RF12 | O sistema deverá permitir registrar a conclusão e a entrega dos equipamentos. | Média |
+| RF13 | O sistema deverá permitir consultar o histórico de atendimento. | Média |
+| RF14 | O sistema deverá gerar relatórios operacionais básicos. | Média |
+| RF15 | O sistema deverá preservar os registros entre execuções. | Alta |
+| RF16 | O sistema deverá validar entradas e informar erros de operação. | Alta |
+| RF17 | O sistema deverá impedir referências a registros inexistentes. | Alta |
+| RF18 | O sistema deverá identificar o responsável pelos registros quando houver mecanismo de identificação de usuários implementado. | Média |
+
+## 7. Requisitos não funcionais
+
+| ID | Descrição |
+|---|---|
+| RNF01 | **Usabilidade:** menus e mensagens deverão utilizar linguagem clara e consistente. |
+| RNF02 | **Portabilidade:** o código deverá ser compatível com compiladores C disponíveis em ambientes como Dev-C++ e Code::Blocks, observadas as dependências utilizadas. |
+| RNF03 | **Persistência:** os dados deverão continuar disponíveis após o encerramento e a reabertura do programa. |
+| RNF04 | **Integridade:** identificadores e relacionamentos deverão ser validados para evitar referências inválidas. |
+| RNF05 | **Segurança:** o projeto deverá prever controles de acesso adequados às responsabilidades dos usuários. |
+| RNF06 | **Privacidade:** os dados pessoais deverão ser limitados ao necessário para as finalidades do sistema. |
+| RNF07 | **Manutenibilidade:** o código deverá ser organizado em funções e módulos com responsabilidades claras. |
+| RNF08 | **Confiabilidade:** operações críticas deverão validar as condições necessárias antes de confirmar alterações. |
+| RNF09 | **Recuperação:** deverão ser definidos procedimentos de cópia de segurança e recuperação dos dados. |
+| RNF10 | **Acessibilidade:** a interface deverá apresentar mensagens claras e não depender exclusivamente de cores para transmitir informações. |
+| RNF11 | **Consistência:** as operações relacionadas a pagamentos e estoque deverão evitar gravações parciais ou estados inconsistentes. |
+
+## 8. Regras de negócio
+
+- **RN01:** um cliente poderá possuir vários equipamentos.
+- **RN02:** cada equipamento deverá estar associado a um cliente existente.
+- **RN03:** cada ordem de serviço deverá identificar o equipamento atendido.
+- **RN04:** uma ordem de serviço deverá ser criada com o status `ABERTA`.
+- **RN05:** diagnósticos e orçamentos deverão estar associados à ordem correspondente.
+- **RN06:** uma ordem não poderá ser concluída enquanto os requisitos obrigatórios para a conclusão não forem atendidos.
+- **RN07:** uma peça somente poderá ser utilizada quando houver quantidade suficiente em estoque.
+- **RN08:** toda utilização de peça deverá gerar uma movimentação de estoque.
+- **RN09:** cada pagamento deverá estar associado a uma ordem de serviço e registrar valor, data e forma de pagamento.
+- **RN10:** uma ordem somente poderá ser marcada como `ENTREGUE` depois de concluída e de a entrega ter sido registrada.
+- **RN11:** o sistema deverá impedir referências a clientes, equipamentos, ordens ou peças inexistentes.
+- **RN12:** alterações de estoque e pagamentos deverão preservar a consistência dos registros.
+- **RN13:** as transições de status deverão seguir um fluxo definido, impedindo mudanças incompatíveis.
+- **RN14:** a recusa de orçamento deverá seguir um procedimento explícito, incluindo o encerramento ou cancelamento do atendimento e o registro da devolução, quando aplicável.
+
+### 8.1. Status propostos para as ordens
+
+- `ABERTA`
+- `EM_DIAGNOSTICO`
+- `AGUARDANDO_APROVACAO`
+- `AGUARDANDO_PECA`
+- `EM_EXECUCAO`
+- `CONCLUIDA`
+- `ENTREGUE`
+- `CANCELADA`
+
+As transições permitidas entre os estados deverão ser detalhadas no projeto e implementadas de forma consistente.
+
+## 9. Histórias de usuário
+
+| ID | História | Critério de aceitação |
+|---|---|---|
+| US01 | Como funcionário, quero cadastrar clientes para centralizar seus dados. | O cliente válido recebe um identificador e pode ser consultado posteriormente. |
+| US02 | Como funcionário, quero cadastrar equipamentos vinculados a clientes. | O sistema aceita clientes existentes e rejeita referências inválidas. |
+| US03 | Como funcionário, quero abrir ordens de serviço para registrar atendimentos. | A ordem recebe um identificador, equipamento válido e status inicial. |
+| US04 | Como funcionário, quero consultar ordens para acompanhar os atendimentos. | A consulta apresenta a ordem encontrada ou informa que ela não existe. |
+| US05 | Como técnico, quero registrar diagnósticos para documentar os problemas identificados. | O diagnóstico fica associado à ordem correta. |
+| US06 | Como funcionário, quero registrar orçamentos para informar os custos estimados. | O valor é validado e associado à ordem. |
+| US07 | Como técnico, quero atualizar o andamento do serviço. | O sistema aceita transições permitidas e rejeita transições inválidas. |
+| US08 | Como funcionário, quero cadastrar peças para controlar os itens disponíveis. | A peça é cadastrada com identificador e saldo válido. |
+| US09 | Como técnico, quero registrar peças utilizadas na manutenção. | A saída é registrada somente quando houver saldo suficiente. |
+| US10 | Como funcionário, quero registrar pagamentos para acompanhar os valores recebidos. | O pagamento fica associado à ordem e possui valor validado. |
+| US11 | Como funcionário, quero registrar entregas para controlar a devolução dos equipamentos. | A entrega é registrada somente após a conclusão do serviço. |
+| US12 | Como responsável pela gestão, quero consultar relatórios para acompanhar a operação. | Os relatórios apresentam informações compatíveis com os registros armazenados. |
+| US13 | Como responsável pelo sistema, quero preservar a integridade dos dados. | O sistema rejeita referências inexistentes e operações inválidas. |
+| US14 | Como equipe de desenvolvimento, queremos integrar SQLite para persistir os dados. | Os dados são gravados e recuperados após reiniciar o programa, com testes documentados. |
+
+## 10. Diagrama de casos de uso
+
+O diagrama apresenta as funcionalidades do sistema e os atores que interagem com elas.
+
+```mermaid
+flowchart LR
+    F[Funcionário]
+    T[Técnico]
+
+    subgraph S["TechFix Manager"]
+        C1([Gerenciar clientes])
+        C2([Gerenciar equipamentos])
+        C3([Abrir ordem de serviço])
+        C4([Consultar ordens])
+        C5([Registrar diagnóstico])
+        C6([Registrar orçamento])
+        C7([Atualizar status])
+        C8([Gerenciar estoque])
+        C9([Registrar uso de peças])
+        C10([Registrar pagamento])
+        C11([Registrar entrega])
+        C12([Consultar histórico])
+        C13([Emitir relatórios])
+    end
+
+    F --- C1
+    F --- C2
+    F --- C3
+    F --- C4
+    F --- C6
+    F --- C8
+    F --- C10
+    F --- C11
+    F --- C12
+    F --- C13
+
+    T --- C4
+    T --- C5
+    T --- C7
+    T --- C9
+    T --- C12
+```
+
+Este diagrama é uma representação inicial das responsabilidades dos atores. A versão UML formal poderá ser reproduzida em uma ferramenta de modelagem compatível com diagramas de casos de uso.
+
+## 11. Modelo conceitual de classes
+
+As entidades conceituais iniciais são:
+
+- **Cliente:** dados de identificação e contato.
+- **Equipamento:** características do equipamento e referência ao cliente.
+- **OrdemServico:** registro central do atendimento e seu status.
+- **Tecnico:** identificação do profissional responsável.
+- **Diagnostico:** descrição do problema e da avaliação técnica.
+- **Orcamento:** valor estimado e situação de aprovação.
+- **Peca:** identificação e informações da peça.
+- **MovimentacaoEstoque:** registro de entradas e saídas de peças.
+- **Pagamento:** valor, data e forma de pagamento.
+- **Entrega:** informações sobre a devolução do equipamento.
+
+### 11.1. Relacionamentos previstos
+
+- Um cliente poderá possuir vários equipamentos.
+- Um equipamento poderá aparecer em várias ordens de serviço ao longo do tempo.
+- Uma ordem poderá possuir vários diagnósticos ou registros técnicos.
+- Uma ordem poderá possuir um orçamento vigente, conforme as regras que forem definidas.
+- Um técnico poderá ser responsável por várias ordens.
+- Uma ordem poderá envolver várias movimentações de estoque.
+- Uma peça poderá aparecer em várias movimentações de estoque.
+- Uma ordem poderá possuir vários pagamentos.
+- Uma ordem poderá possuir, no máximo, um registro de entrega.
+
+### 11.2. Diagrama de classes conceitual
+
+```mermaid
+classDiagram
+    class Cliente {
+        +id
+        +nome
+        +telefone
+        +email
+    }
+
+    class Equipamento {
+        +id
+        +tipo
+        +marca
+        +modelo
+        +numeroSerie
+    }
+
+    class OrdemServico {
+        +id
+        +dataAbertura
+        +status
+        +abrir()
+        +consultar()
+        +atualizarStatus()
+        +concluir()
+    }
+
+    class Tecnico {
+        +id
+        +nome
+    }
+
+    class Diagnostico {
+        +id
+        +descricao
+        +dataRegistro
+    }
+
+    class Orcamento {
+        +id
+        +valor
+        +situacaoAprovacao
+    }
+
+    class Peca {
+        +id
+        +descricao
+        +quantidadeEstoque
+        +valorUnitario
+    }
+
+    class MovimentacaoEstoque {
+        +id
+        +quantidade
+        +tipo
+        +data
+    }
+
+    class Pagamento {
+        +id
+        +valor
+        +forma
+        +data
+    }
+
+    class Entrega {
+        +id
+        +dataEntrega
+        +responsavel
+    }
+
+    Cliente "1" --> "0..*" Equipamento
+    Equipamento "1" --> "0..*" OrdemServico
+    Tecnico "1" --> "0..*" OrdemServico
+    OrdemServico "1" --> "0..*" Diagnostico
+    OrdemServico "1" --> "0..1" Orcamento
+    OrdemServico "1" --> "0..*" MovimentacaoEstoque
+    Peca "1" --> "0..*" MovimentacaoEstoque
+    OrdemServico "1" --> "0..*" Pagamento
+    OrdemServico "1" --> "0..1" Entrega
+```
+
+O modelo é conceitual. A implementação em C poderá representar essas entidades com estruturas (`struct`) e funções. Os relacionamentos serão mantidos por identificadores e restrições no banco de dados.
+
+## 12. Fluxo de atividades de uma ordem de serviço
+
+```mermaid
+flowchart TD
+    A([Início]) --> B[Identificar ou cadastrar cliente]
+    B --> C[Registrar ou selecionar equipamento]
+    C --> D[Abrir ordem de serviço]
+    D --> E[Realizar diagnóstico]
+    E --> F[Registrar orçamento]
+    F --> G{Orçamento aprovado?}
+
+    G -- Não --> H[Registrar recusa e procedimento de encerramento]
+    H --> Z([Fim])
+
+    G -- Sim --> I{Peças disponíveis?}
+    I -- Não --> J[Registrar necessidade de peças]
+    J --> K[Aguardar reposição]
+    K --> I
+
+    I -- Sim --> L[Registrar saída das peças]
+    L --> M[Executar manutenção]
+    M --> N[Registrar conclusão]
+    N --> O[Registrar pagamento conforme aplicável]
+    O --> P[Registrar entrega]
+    P --> Q[Atualizar status para ENTREGUE]
+    Q --> Z
+```
+
+O fluxo deverá ser refinado durante a especificação das transições de status, das exceções operacionais e das regras para cancelamento.
+
+## 13. Arquitetura lógica proposta
+
+A aplicação será organizada em três camadas lógicas:
+
+1. **Interface:** apresenta os menus, recebe entradas e exibe os resultados.
+2. **Regras de negócio:** valida os dados e executa operações sobre clientes, equipamentos, ordens, estoque e pagamentos.
+3. **Persistência:** realiza as operações de gravação e consulta no SQLite, caso a integração seja confirmada.
+
+Essa separação busca reduzir o acoplamento entre a interface, as regras do sistema e o armazenamento dos dados.
+
+A arquitetura representa uma proposta de organização. Sua correspondência com o código será verificada durante a implementação.
+
+## 14. Persistência e integridade dos dados
+
+SQLite será avaliado como mecanismo de persistência local. A decisão definitiva dependerá da disponibilidade da biblioteca, da configuração do compilador e da validação da integração.
+
+O modelo relacional deverá prever:
+
+- Chaves primárias para identificar os registros.
+- Chaves estrangeiras para preservar os relacionamentos.
+- Restrições para impedir valores inválidos.
+- Transações para operações que alterem mais de um registro relacionado.
+- Consultas para recuperar históricos e produzir relatórios.
+- Estratégia de backup e recuperação.
+
+A estrutura física do banco, os comandos SQL e a normalização serão detalhados em documento próprio.
+
+## 15. Segurança, privacidade e inclusão
+
+O sistema poderá armazenar dados pessoais de contato e informações sobre os atendimentos. Por esse motivo, o projeto deverá considerar os seguintes princípios:
+
+- Coleta de dados limitada à finalidade operacional.
+- Acesso aos dados conforme a responsabilidade do usuário.
+- Validação das entradas antes de gravar informações.
+- Proteção dos arquivos e cópias de segurança.
+- Prevenção de alterações inconsistentes.
+- Mensagens claras para facilitar o uso por pessoas com diferentes níveis de familiaridade tecnológica.
+- Não utilização exclusiva de cores para indicar status ou erros.
+- Registro de decisões de projeto relacionadas à privacidade e à segurança.
+
+A implementação efetiva de autenticação, permissões, backup e demais controles deverá ser verificada por testes. A simples adoção do SQLite não comprova que esses requisitos foram atendidos.
+
+## 16. Estratégia de desenvolvimento
+
+O desenvolvimento será incremental, priorizando a construção e a validação do fluxo principal antes da ampliação de funcionalidades.
+
+### Etapa 1: estrutura e persistência
+
+Criar o projeto em C, configurar a compilação e validar a conexão com SQLite.
+
+### Etapa 2: cadastros
+
+Implementar cadastro e consulta de clientes e equipamentos, preservando os relacionamentos.
+
+### Etapa 3: ordens de serviço
+
+Implementar abertura, consulta e atualização de status das ordens.
+
+### Etapa 4: operações técnicas
+
+Implementar diagnósticos, orçamentos e validações do fluxo de atendimento.
+
+### Etapa 5: estoque e pagamentos
+
+Implementar peças, movimentações de estoque e pagamentos vinculados às ordens.
+
+### Etapa 6: entrega e relatórios
+
+Implementar registro de entrega, consulta de histórico e relatórios básicos.
+
+### Etapa 7: testes e documentação final
+
+Executar os testes, registrar os resultados, corrigir problemas e atualizar a documentação para refletir o sistema efetivamente entregue.
+
+## 17. Critérios gerais de aceitação
+
+O sistema será considerado funcionalmente validado quando:
+
+- Os cadastros permitirem inserir e consultar registros válidos.
+- Os dados persistirem após o encerramento e a reabertura do programa.
+- Equipamentos e ordens não aceitarem referências inválidas.
+- As transições de status respeitarem as regras definidas.
+- O estoque não permitir saídas superiores ao saldo disponível.
+- Os pagamentos forem associados às ordens corretas.
+- As entregas respeitarem as condições de conclusão.
+- Os relatórios refletirem os dados armazenados.
+- Os erros de entrada forem tratados sem encerramento inesperado.
+- Os resultados dos testes forem registrados e passíveis de conferência.
+
+Os critérios serão detalhados em casos de teste específicos antes da validação final.
+
+## 18. Limitações e evolução futura
+
+A primeira versão terá foco no fluxo operacional da assistência técnica. Recursos como integração com fornecedores, notificações automáticas, interfaces gráficas, acesso remoto e integração com serviços externos poderão ser avaliados em versões futuras.
+
+A evolução dependerá da estabilidade do núcleo funcional, das necessidades identificadas e dos limites de tempo e infraestrutura.
+
+## 19. Considerações finais
+
+A especificação inicial do TechFix Manager estabelece uma base para o desenvolvimento de uma aplicação destinada a organizar o processo de manutenção de equipamentos eletrônicos.
+
+A definição de escopo, requisitos, atores, regras de negócio e modelos conceituais orientará a implementação e permitirá avaliar a correspondência entre as necessidades da organização fictícia e as funcionalidades entregues.
+
+Este documento deverá evoluir de acordo com as decisões técnicas e os resultados dos testes. As funcionalidades serão consideradas concluídas somente após sua implementação e validação.
+
+---
+
+**Controle de versão do documento**
+
+| Versão | Data | Alteração |
+|---|---|---|
+| 1.0 | 27/10/2026 | Criação da especificação inicial e dos modelos conceituais. |
