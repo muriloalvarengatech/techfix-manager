@@ -1,0 +1,711 @@
+# Backlog do Produto | TechFix Manager
+
+**Projeto:** TechFix Manager  
+**Versão:** 1.0  
+**Documento:** Backlog do Produto  
+**Status:** Planejado  
+**Tecnologia principal:** Linguagem C  
+**Persistência prevista:** SQLite, condicionada à validação do ambiente de desenvolvimento
+
+---
+
+## 1. Objetivo do backlog
+
+Este documento organiza as funcionalidades, atividades técnicas e critérios de aceitação necessários para desenvolver o TechFix Manager, um sistema de gerenciamento de manutenção e suporte técnico de equipamentos eletrônicos.
+
+O backlog será utilizado para orientar o desenvolvimento, acompanhar o progresso das entregas e verificar se cada funcionalidade atende aos requisitos definidos na especificação do sistema.
+
+As tarefas estão organizadas por prioridade e dependência. A ordem poderá ser ajustada durante o projeto, desde que as alterações sejam justificadas e os requisitos acadêmicos e funcionais sejam preservados.
+
+## 2. Convenções utilizadas
+
+### 2.1 Prioridades
+
+| Prioridade | Significado |
+|---|---|
+| P0 | Essencial para iniciar ou permitir o funcionamento do sistema |
+| P1 | Necessária para completar o fluxo principal de atendimento |
+| P2 | Complementar, importante para ampliar o controle e a análise dos dados |
+
+### 2.2 Status das tarefas
+
+| Status | Significado |
+|---|---|
+| A fazer | A atividade ainda não foi iniciada |
+| Em andamento | A atividade está sendo executada |
+| Em revisão | A atividade está pronta para validação |
+| Concluída | A atividade foi implementada e validada conforme os critérios definidos |
+| Bloqueada | A atividade depende de uma decisão, recurso ou tarefa anterior |
+
+**Observação:** todas as tarefas deste documento começam com status **A fazer**. A documentação já existente não significa que as funcionalidades correspondentes estejam implementadas no programa.
+
+### 2.3 Identificação
+
+- **US:** história de usuário.
+- **T:** tarefa técnica.
+- **CT:** caso de teste.
+- **RF:** requisito funcional.
+- **RNF:** requisito não funcional.
+
+Os identificadores devem ser mantidos estáveis para facilitar a rastreabilidade entre backlog, especificação, testes e documentação acadêmica.
+
+---
+
+## 3. Objetivo do produto
+
+Desenvolver uma aplicação de terminal em C que permita registrar clientes e equipamentos, controlar ordens de serviço, documentar diagnósticos, elaborar orçamentos, gerenciar peças, registrar pagamentos, acompanhar entregas e consultar relatórios.
+
+O sistema deverá organizar o ciclo de manutenção desde o cadastro do cliente até a conclusão e entrega do equipamento.
+
+A solução será desenvolvida inicialmente para execução local. A integração com SQLite será validada antes de ser adotada definitivamente, considerando a compatibilidade com o compilador e a configuração do ambiente disponível.
+
+---
+
+## 4. Épicos do produto
+
+| Épico | Descrição | Prioridade |
+|---|---|---|
+| EP01 | Preparação do ambiente e arquitetura | P0 |
+| EP02 | Persistência e modelagem dos dados | P0 |
+| EP03 | Cadastro de clientes e usuários | P0 |
+| EP04 | Cadastro e consulta de equipamentos | P0 |
+| EP05 | Gerenciamento de ordens de serviço | P0 |
+| EP06 | Diagnósticos, orçamentos e status | P1 |
+| EP07 | Controle de peças e estoque | P1 |
+| EP08 | Pagamentos e entregas | P1 |
+| EP09 | Relatórios e histórico | P1 |
+| EP10 | Testes, segurança e documentação final | P0 |
+
+---
+
+## 5. Backlog priorizado de histórias de usuário
+
+### EP01. Preparação do ambiente e arquitetura
+
+#### US01. Estruturar o projeto
+
+**História:** Como desenvolvedor, quero organizar o código e os arquivos do projeto para facilitar a implementação, os testes e a manutenção.
+
+**Prioridade:** P0  
+**Requisitos relacionados:** RNF de manutenibilidade e organização do projeto.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- O repositório deve possuir uma estrutura de diretórios organizada.
+- O código-fonte deve ficar separado da documentação.
+- Os arquivos necessários para compilação devem estar identificados.
+- O projeto deve possuir instruções para configuração e execução.
+- As alterações devem ser registradas por meio de commits descritivos.
+
+**Tarefas técnicas:**
+- [ ] T01.1 Criar a estrutura inicial de diretórios.
+- [ ] T01.2 Definir o ponto de entrada do programa em C.
+- [ ] T01.3 Preparar as instruções de compilação.
+- [ ] T01.4 Definir convenções de nomes e organização do código.
+- [ ] T01.5 Registrar as decisões técnicas na documentação.
+
+---
+
+#### US02. Validar a integração com SQLite
+
+**História:** Como desenvolvedor, quero verificar se o ambiente consegue compilar e executar um programa C integrado ao SQLite para definir a estratégia de persistência dos dados.
+
+**Prioridade:** P0  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- O ambiente de desenvolvimento deve ser identificado.
+- Um programa de teste deve conseguir abrir ou criar um banco SQLite.
+- O programa deve executar uma operação de gravação e outra de consulta.
+- Os erros de abertura, execução e fechamento devem ser tratados.
+- O procedimento de configuração deve ser documentado.
+
+**Tarefas técnicas:**
+- [ ] T02.1 Verificar a versão e a configuração do compilador.
+- [ ] T02.2 Verificar a disponibilidade da biblioteca SQLite.
+- [ ] T02.3 Criar um programa mínimo de teste de conexão.
+- [ ] T02.4 Testar inserção e consulta de um registro.
+- [ ] T02.5 Registrar o resultado da validação.
+
+**Plano alternativo:** caso a integração não seja viável no ambiente disponível, documentar o impedimento e avaliar uma persistência temporária em arquivos, sem afirmar que ela oferece as mesmas garantias de um banco de dados relacional. A decisão deverá ser registrada antes da implementação dos módulos dependentes.
+
+---
+
+### EP02. Persistência e modelagem dos dados
+
+#### US03. Criar a estrutura do banco de dados
+
+**História:** Como sistema, preciso armazenar os registros de forma organizada para permitir consultas consistentes e preservar os relacionamentos entre clientes, equipamentos, ordens de serviço e operações financeiras.
+
+**Prioridade:** P0  
+**Requisitos relacionados:** RF de persistência e gerenciamento dos cadastros.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- O modelo de dados deve representar as principais entidades do sistema.
+- As tabelas devem possuir chaves primárias.
+- Os relacionamentos devem utilizar chaves estrangeiras quando aplicável.
+- Os campos obrigatórios devem possuir validações adequadas.
+- O modelo lógico deve ser documentado.
+- A criação do banco deve poder ser reproduzida a partir de um script SQL.
+
+**Tarefas técnicas:**
+- [ ] T03.1 Definir as entidades e seus atributos.
+- [ ] T03.2 Elaborar o modelo conceitual.
+- [ ] T03.3 Elaborar o modelo lógico relacional.
+- [ ] T03.4 Verificar as formas normais aplicáveis.
+- [ ] T03.5 Criar o script SQL de inicialização.
+- [ ] T03.6 Testar a criação das tabelas e dos relacionamentos.
+
+---
+
+### EP03. Cadastro de clientes e usuários
+
+#### US04. Cadastrar e consultar clientes
+
+**História:** Como funcionário, quero cadastrar e consultar clientes para identificar corretamente os responsáveis pelos equipamentos recebidos.
+
+**Prioridade:** P0  
+**Requisitos relacionados:** RF de cadastro e consulta de clientes.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- Deve ser possível cadastrar um cliente com os campos obrigatórios.
+- O sistema deve atribuir um identificador único ao cadastro.
+- Deve ser possível listar e consultar clientes.
+- Campos obrigatórios não podem ser aceitos vazios.
+- O sistema deve informar quando um registro não for encontrado.
+- Os dados devem permanecer disponíveis após encerrar e reabrir o programa, quando utilizada a persistência definitiva.
+
+**Tarefas técnicas:**
+- [ ] T04.1 Definir os campos do cadastro de clientes.
+- [ ] T04.2 Implementar a função de cadastro.
+- [ ] T04.3 Implementar a listagem e a consulta por identificador.
+- [ ] T04.4 Validar os dados informados.
+- [ ] T04.5 Implementar a persistência.
+- [ ] T04.6 Executar os testes de cadastro e consulta.
+
+---
+
+#### US05. Gerenciar usuários e perfis
+
+**História:** Como administrador ou responsável pelo sistema, quero diferenciar funcionários e técnicos para organizar as responsabilidades de cada perfil.
+
+**Prioridade:** P1  
+**Requisitos relacionados:** RF de usuários e controle de acesso.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- O sistema deve representar, no mínimo, os perfis funcionário e técnico.
+- Cada usuário deve possuir um identificador.
+- As responsabilidades permitidas a cada perfil devem estar documentadas.
+- Operações restritas devem ser verificadas antes de sua execução.
+- O sistema não deve exibir credenciais ou dados sensíveis desnecessariamente.
+
+**Tarefas técnicas:**
+- [ ] T05.1 Definir os dados necessários para o cadastro de usuários.
+- [ ] T05.2 Definir as permissões dos perfis.
+- [ ] T05.3 Implementar o cadastro e a consulta de usuários.
+- [ ] T05.4 Implementar verificações de permissão nas operações restritas.
+- [ ] T05.5 Testar os acessos permitidos e negados.
+
+**Observação:** autenticação por senha deverá ser implementada somente com tratamento adequado das credenciais. Senhas não devem ser armazenadas em texto puro.
+
+---
+
+### EP04. Cadastro e consulta de equipamentos
+
+#### US06. Cadastrar equipamentos
+
+**História:** Como funcionário, quero registrar os equipamentos recebidos para manter suas informações associadas ao cliente correto.
+
+**Prioridade:** P0  
+**Requisitos relacionados:** RF de cadastro de equipamentos.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- Deve ser possível registrar o tipo, a marca, o modelo e a descrição do equipamento, conforme os campos definidos no modelo de dados.
+- Cada equipamento deve possuir um identificador único.
+- O cadastro deve estar relacionado a um cliente existente.
+- O sistema deve impedir a associação a um cliente inexistente.
+- Deve ser possível consultar os equipamentos registrados.
+
+**Tarefas técnicas:**
+- [ ] T06.1 Definir os campos do equipamento.
+- [ ] T06.2 Implementar o cadastro.
+- [ ] T06.3 Implementar a consulta por identificador.
+- [ ] T06.4 Implementar a listagem de equipamentos por cliente.
+- [ ] T06.5 Validar os relacionamentos e a persistência.
+
+---
+
+### EP05. Gerenciamento de ordens de serviço
+
+#### US07. Abrir e consultar ordens de serviço
+
+**História:** Como funcionário, quero abrir uma ordem de serviço para formalizar o recebimento de um equipamento para manutenção.
+
+**Prioridade:** P0  
+**Requisitos relacionados:** RF de abertura e consulta de ordens de serviço.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- A ordem de serviço deve receber um identificador único.
+- Deve estar vinculada a um cliente e a um equipamento existentes.
+- Deve registrar a data de abertura e a descrição inicial do problema.
+- Deve possuir um status inicial definido.
+- Deve ser possível consultar uma ordem pelo identificador.
+- O sistema deve impedir a abertura de uma ordem para equipamento inexistente.
+
+**Tarefas técnicas:**
+- [ ] T07.1 Definir os campos da ordem de serviço.
+- [ ] T07.2 Definir os status válidos.
+- [ ] T07.3 Implementar a abertura de ordens.
+- [ ] T07.4 Implementar a consulta e a listagem.
+- [ ] T07.5 Validar os vínculos com clientes e equipamentos.
+- [ ] T07.6 Testar a persistência das ordens.
+
+---
+
+#### US08. Registrar diagnósticos técnicos
+
+**História:** Como técnico, quero registrar o diagnóstico de uma ordem de serviço para documentar a análise realizada e os reparos necessários.
+
+**Prioridade:** P1  
+**Requisitos relacionados:** RF de diagnóstico técnico.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- O diagnóstico deve estar associado a uma ordem de serviço existente.
+- Deve ser possível registrar a descrição do problema identificado.
+- Deve ser possível registrar a solução ou o procedimento recomendado.
+- O sistema deve identificar a ordem à qual o diagnóstico pertence.
+- Uma ordem inexistente não deve aceitar um diagnóstico.
+- O histórico deve permanecer consultável.
+
+**Tarefas técnicas:**
+- [ ] T08.1 Definir os campos do diagnóstico.
+- [ ] T08.2 Implementar o registro do diagnóstico.
+- [ ] T08.3 Implementar a consulta do diagnóstico por ordem.
+- [ ] T08.4 Validar o perfil autorizado a registrar diagnósticos.
+- [ ] T08.5 Testar o histórico e os vínculos.
+
+---
+
+#### US09. Elaborar orçamentos
+
+**História:** Como funcionário ou técnico autorizado, quero registrar um orçamento para informar os custos previstos do serviço antes de sua execução.
+
+**Prioridade:** P1  
+**Requisitos relacionados:** RF de orçamento.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- O orçamento deve estar associado a uma ordem de serviço.
+- Deve permitir registrar os valores previstos de peças e mão de obra.
+- O valor total deve ser calculado a partir dos componentes registrados.
+- O sistema deve validar valores numéricos e não aceitar valores negativos.
+- A situação do orçamento deve ser identificável.
+- O orçamento deve poder ser consultado posteriormente.
+
+**Tarefas técnicas:**
+- [ ] T09.1 Definir os campos e estados do orçamento.
+- [ ] T09.2 Implementar o cálculo do valor total.
+- [ ] T09.3 Implementar o registro e a consulta.
+- [ ] T09.4 Implementar a atualização da situação do orçamento.
+- [ ] T09.5 Testar cálculos e validações.
+
+**Regra de negócio:** o serviço não deve avançar para uma etapa que exija aprovação sem que a aprovação prevista no fluxo tenha sido registrada.
+
+---
+
+#### US10. Atualizar o status das ordens de serviço
+
+**História:** Como funcionário ou técnico autorizado, quero atualizar o status de uma ordem para acompanhar o andamento da manutenção.
+
+**Prioridade:** P1  
+**Requisitos relacionados:** RF de acompanhamento de ordens.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- O sistema deve apresentar os status válidos.
+- Deve ser possível consultar o status atual de uma ordem.
+- Alterações devem ser feitas somente em ordens existentes.
+- Transições inválidas devem ser recusadas.
+- O sistema deve informar o resultado da operação.
+- O histórico de alterações relevantes deve ser preservado, conforme o modelo de dados definido.
+
+**Tarefas técnicas:**
+- [ ] T10.1 Definir o fluxo de estados da ordem.
+- [ ] T10.2 Implementar a validação das transições.
+- [ ] T10.3 Implementar a atualização do status.
+- [ ] T10.4 Registrar o histórico de alterações.
+- [ ] T10.5 Testar transições válidas e inválidas.
+
+---
+
+### EP07. Controle de peças e estoque
+
+#### US11. Cadastrar peças e controlar estoque
+
+**História:** Como funcionário responsável pelo estoque, quero cadastrar peças e registrar movimentações para acompanhar a disponibilidade de materiais utilizados nos reparos.
+
+**Prioridade:** P1  
+**Requisitos relacionados:** RF de estoque e peças.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- Deve ser possível cadastrar uma peça com identificador único, descrição e quantidade disponível.
+- O sistema deve permitir consultar as peças cadastradas.
+- Entradas e saídas de estoque devem ser registradas.
+- O sistema deve impedir saídas que resultem em estoque negativo.
+- As movimentações devem manter vínculo com a peça correspondente.
+- Quando aplicável, o consumo de uma peça deve estar associado à ordem de serviço.
+- O saldo deve ser atualizado de forma consistente.
+
+**Tarefas técnicas:**
+- [ ] T11.1 Definir os campos da peça.
+- [ ] T11.2 Definir o modelo de movimentação de estoque.
+- [ ] T11.3 Implementar o cadastro e a consulta de peças.
+- [ ] T11.4 Implementar entradas de estoque.
+- [ ] T11.5 Implementar saídas de estoque.
+- [ ] T11.6 Validar a disponibilidade antes de cada saída.
+- [ ] T11.7 Testar os saldos e o histórico de movimentações.
+
+---
+
+### EP08. Pagamentos e entregas
+
+#### US12. Registrar pagamentos
+
+**História:** Como funcionário autorizado, quero registrar pagamentos relacionados aos serviços para acompanhar os valores recebidos e os saldos pendentes.
+
+**Prioridade:** P1  
+**Requisitos relacionados:** RF de pagamentos.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- O pagamento deve estar associado a uma ordem de serviço existente.
+- Deve ser possível registrar o valor e a data do pagamento.
+- O valor deve ser numérico e não negativo.
+- O sistema deve distinguir ordens pagas e pendentes conforme as regras definidas.
+- O valor recebido e o saldo restante devem ser calculados corretamente quando houver pagamentos parciais.
+- O histórico de pagamentos deve poder ser consultado.
+- O sistema não deve registrar pagamentos duplicados sem uma operação explícita.
+
+**Tarefas técnicas:**
+- [ ] T12.1 Definir os campos do pagamento.
+- [ ] T12.2 Definir as regras de pagamentos parciais e totais.
+- [ ] T12.3 Implementar o registro de pagamentos.
+- [ ] T12.4 Implementar o cálculo de saldo.
+- [ ] T12.5 Implementar a consulta do histórico financeiro.
+- [ ] T12.6 Testar pagamentos parciais, totais e valores inválidos.
+
+---
+
+#### US13. Acompanhar a entrega dos equipamentos
+
+**História:** Como funcionário, quero registrar a situação da entrega para saber se o equipamento está pronto para retirada e se já foi devolvido ao cliente.
+
+**Prioridade:** P1  
+**Requisitos relacionados:** RF de acompanhamento de entrega.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- A entrega deve estar vinculada a uma ordem de serviço.
+- O sistema deve identificar a situação da entrega.
+- Deve ser possível registrar a data de retirada ou entrega quando aplicável.
+- Uma entrega não deve ser registrada para uma ordem inexistente.
+- O fluxo deve respeitar as condições definidas para a conclusão do serviço.
+- As informações devem poder ser consultadas posteriormente.
+
+**Tarefas técnicas:**
+- [ ] T13.1 Definir os estados de entrega.
+- [ ] T13.2 Definir os requisitos para liberação do equipamento.
+- [ ] T13.3 Implementar o registro de entrega.
+- [ ] T13.4 Implementar a consulta da situação.
+- [ ] T13.5 Testar o fluxo de conclusão e entrega.
+
+---
+
+### EP09. Relatórios e histórico
+
+#### US14. Consultar relatórios e histórico
+
+**História:** Como funcionário ou responsável pela gestão, quero consultar relatórios e históricos para acompanhar os serviços realizados, os equipamentos atendidos, as movimentações de estoque e os pagamentos registrados.
+
+**Prioridade:** P1  
+**Requisitos relacionados:** RF de relatórios e histórico.  
+**Status:** A fazer
+
+**Critérios de aceitação:**
+- Deve ser possível consultar ordens de serviço por identificador e status.
+- Deve ser possível consultar o histórico de um equipamento.
+- Deve ser possível listar movimentações de estoque.
+- Deve ser possível consultar pagamentos e saldos.
+- Os relatórios devem utilizar dados persistidos e atualizados.
+- Consultas sem resultados devem apresentar uma mensagem adequada.
+- Os dados apresentados devem corresponder aos registros armazenados.
+
+**Tarefas técnicas:**
+- [ ] T14.1 Definir os relatórios prioritários.
+- [ ] T14.2 Implementar a listagem de ordens por status.
+- [ ] T14.3 Implementar o histórico de equipamentos.
+- [ ] T14.4 Implementar o relatório de estoque.
+- [ ] T14.5 Implementar o relatório financeiro.
+- [ ] T14.6 Testar a consistência dos resultados.
+
+---
+
+## 6. Tarefas técnicas transversais
+
+As tarefas desta seção dão suporte a diferentes módulos e devem ser executadas ao longo do desenvolvimento.
+
+### T15. Implementar validação e tratamento de erros
+
+**Prioridade:** P0  
+**Status:** A fazer
+
+- [ ] T15.1 Validar entradas numéricas e textuais.
+- [ ] T15.2 Tratar entradas vazias ou inválidas.
+- [ ] T15.3 Tratar falhas de acesso ao banco de dados.
+- [ ] T15.4 Apresentar mensagens compreensíveis ao usuário.
+- [ ] T15.5 Evitar encerramentos inesperados por entradas inválidas.
+
+**Critérios de aceitação:**
+- Entradas inválidas não devem provocar corrupção dos dados.
+- Erros previsíveis devem ser tratados.
+- As mensagens devem orientar o usuário sobre como corrigir a entrada.
+
+### T16. Organizar funções e módulos em C
+
+**Prioridade:** P0  
+**Status:** A fazer
+
+- [ ] T16.1 Separar responsabilidades em funções.
+- [ ] T16.2 Evitar duplicação desnecessária de código.
+- [ ] T16.3 Utilizar estruturas de dados adequadas.
+- [ ] T16.4 Documentar funções relevantes.
+- [ ] T16.5 Aplicar estruturas condicionais e de repetição onde necessário.
+
+**Critérios de aceitação:**
+- O código deve possuir responsabilidades identificáveis.
+- Funções devem ter objetivos claros.
+- As estruturas da linguagem C devem ser utilizadas de forma coerente com o problema.
+- O código deve poder ser compilado sem erros no ambiente definido.
+
+### T17. Implementar persistência e integridade dos dados
+
+**Prioridade:** P0  
+**Status:** A fazer
+
+- [ ] T17.1 Centralizar as operações de acesso ao banco.
+- [ ] T17.2 Validar parâmetros antes de executar operações.
+- [ ] T17.3 Utilizar consultas parametrizadas quando aplicável.
+- [ ] T17.4 Tratar falhas de gravação e consulta.
+- [ ] T17.5 Verificar a integridade dos relacionamentos.
+- [ ] T17.6 Testar a persistência após encerrar e reabrir o programa.
+
+**Critérios de aceitação:**
+- As operações devem informar quando falharem.
+- Os dados devem permanecer consistentes.
+- Entradas de usuários não devem ser concatenadas indiscriminadamente em comandos SQL.
+- O comportamento após falhas deve ser documentado e testado.
+
+### T18. Testar integração entre módulos
+
+**Prioridade:** P0  
+**Status:** A fazer
+
+- [ ] T18.1 Testar o cadastro de cliente seguido do cadastro de equipamento.
+- [ ] T18.2 Testar a abertura de ordem para equipamento existente.
+- [ ] T18.3 Testar diagnóstico e orçamento associados à ordem.
+- [ ] T18.4 Testar consumo de peças e atualização do estoque.
+- [ ] T18.5 Testar pagamentos e saldos.
+- [ ] T18.6 Testar conclusão e entrega.
+- [ ] T18.7 Testar consultas e relatórios.
+
+**Critérios de aceitação:**
+- Os módulos devem compartilhar identificadores de forma consistente.
+- Não devem existir vínculos para registros inexistentes.
+- O fluxo completo deve poder ser executado em ambiente de teste.
+
+---
+
+## 7. Plano de execução por iterações
+
+As iterações abaixo representam uma proposta de organização. A duração de cada uma será definida de acordo com o tempo disponível e a complexidade observada durante a implementação.
+
+### Iteração 0. Preparação técnica
+
+**Objetivo:** confirmar que o ambiente permite construir e executar o projeto.
+
+- [ ] T01 Estruturar o projeto.
+- [ ] T02 Validar a integração com SQLite.
+- [ ] T16 Iniciar a organização das funções em C.
+- [ ] Documentar o procedimento de compilação.
+
+**Entrega esperada:** estrutura inicial do projeto e decisão documentada sobre persistência.
+
+### Iteração 1. Banco de dados e cadastros básicos
+
+**Objetivo:** permitir registrar clientes e equipamentos com persistência.
+
+- [ ] T03 Criar a estrutura do banco.
+- [ ] US04 Implementar cadastro e consulta de clientes.
+- [ ] US06 Implementar cadastro e consulta de equipamentos.
+- [ ] T17 Implementar as operações iniciais de persistência.
+
+**Entrega esperada:** cadastros relacionados e consultáveis.
+
+### Iteração 2. Ordens de serviço
+
+**Objetivo:** iniciar o fluxo operacional da assistência técnica.
+
+- [ ] US07 Implementar abertura e consulta de ordens.
+- [ ] US08 Implementar diagnósticos.
+- [ ] US09 Implementar orçamentos.
+- [ ] US10 Implementar atualização de status.
+
+**Entrega esperada:** fluxo de atendimento desde a abertura da ordem até a definição do serviço.
+
+### Iteração 3. Estoque
+
+**Objetivo:** controlar peças utilizadas nos reparos.
+
+- [ ] US11 Implementar cadastro de peças.
+- [ ] Implementar entradas e saídas de estoque.
+- [ ] Validar disponibilidade antes do consumo.
+- [ ] Testar a associação entre peças e ordens.
+
+**Entrega esperada:** controle básico e consistente das movimentações de estoque.
+
+### Iteração 4. Pagamentos e entregas
+
+**Objetivo:** completar as etapas financeiras e de conclusão do atendimento.
+
+- [ ] US12 Implementar pagamentos.
+- [ ] US13 Implementar acompanhamento de entregas.
+- [ ] Validar as regras de liberação e conclusão.
+- [ ] Testar pagamentos parciais e totais, quando aplicáveis.
+
+**Entrega esperada:** fluxo de encerramento do serviço com informações financeiras e de entrega.
+
+### Iteração 5. Relatórios e validação final
+
+**Objetivo:** consolidar o sistema e preparar as evidências para entrega.
+
+- [ ] US05 Finalizar gerenciamento de usuários e perfis.
+- [ ] US14 Implementar relatórios e históricos.
+- [ ] T18 Executar testes integrados.
+- [ ] Revisar tratamento de erros e integridade dos dados.
+- [ ] Atualizar o README e a documentação técnica.
+- [ ] Registrar limitações conhecidas.
+
+**Entrega esperada:** versão integrada, testada e documentada do sistema.
+
+**Observação de planejamento:** as iterações podem ser reordenadas para atender dependências técnicas ou exigências acadêmicas. O gerenciamento de usuários deverá ser antecipado caso o controle de acesso seja necessário desde o primeiro módulo operacional.
+
+---
+
+## 8. Plano de testes e critérios de validação
+
+Os testes devem ser realizados durante a implementação, e não somente ao final do projeto.
+
+### 8.1 Testes funcionais
+
+| ID | Cenário | Resultado esperado |
+|---|---|---|
+| CT01 | Cadastrar cliente com dados válidos | Cliente registrado e consultável |
+| CT02 | Tentar cadastrar cliente sem campo obrigatório | Operação recusada com mensagem |
+| CT03 | Cadastrar equipamento para cliente existente | Equipamento associado corretamente |
+| CT04 | Associar equipamento a cliente inexistente | Operação recusada |
+| CT05 | Abrir ordem para equipamento existente | Ordem criada com identificador e status inicial |
+| CT06 | Consultar ordem inexistente | Mensagem informando ausência do registro |
+| CT07 | Registrar diagnóstico em ordem válida | Diagnóstico associado à ordem |
+| CT08 | Calcular orçamento com peças e mão de obra | Total calculado corretamente |
+| CT09 | Informar valor negativo em orçamento | Entrada recusada |
+| CT10 | Atualizar status para uma transição inválida | Alteração recusada |
+| CT11 | Retirar peça em quantidade superior ao estoque | Operação recusada |
+| CT12 | Registrar pagamento parcial | Saldo atualizado corretamente |
+| CT13 | Registrar pagamento com valor inválido | Operação recusada |
+| CT14 | Registrar entrega para ordem inexistente | Operação recusada |
+| CT15 | Consultar relatório sem registros | Mensagem apropriada |
+| CT16 | Encerrar e reabrir o sistema | Dados persistidos continuam disponíveis |
+| CT17 | Executar consulta com entrada contendo caracteres especiais | Operação tratada sem comprometer a consulta ou o banco |
+| CT18 | Executar o fluxo completo de uma ordem | Dados consistentes do cadastro à entrega |
+
+### 8.2 Testes não funcionais
+
+| ID | Aspecto | Verificação |
+|---|---|---|
+| CT19 | Usabilidade | Menus e mensagens compreensíveis |
+| CT20 | Manutenibilidade | Código organizado em funções e módulos |
+| CT21 | Integridade | Relacionamentos e valores permanecem consistentes |
+| CT22 | Robustez | Entradas inválidas não encerram inesperadamente o programa |
+| CT23 | Segurança | Operações restritas e dados sensíveis recebem tratamento adequado |
+| CT24 | Portabilidade | Instruções de compilação funcionam no ambiente documentado |
+
+Os testes serão considerados aprovados somente após a execução e o registro dos resultados. A presença de um caso de teste neste documento não significa que ele já tenha sido executado.
+
+---
+
+## 9. Critérios gerais de conclusão
+
+Uma história de usuário será considerada concluída quando:
+
+1. A funcionalidade estiver implementada.
+2. O código compilar no ambiente documentado.
+3. Os critérios de aceitação tiverem sido verificados.
+4. Os testes relevantes tiverem sido executados.
+5. Os erros encontrados tiverem sido corrigidos ou registrados como limitações.
+6. A documentação relacionada estiver atualizada.
+7. As alterações estiverem registradas no repositório.
+
+Uma funcionalidade parcialmente implementada não deverá ser marcada como concluída.
+
+---
+
+## 10. Rastreabilidade com a especificação
+
+O backlog deve permanecer alinhado ao documento `docs/01-especificacao-do-sistema.md`.
+
+As histórias US01 a US14 representam itens de trabalho do produto. Os requisitos funcionais e não funcionais associados devem ser conferidos com a especificação antes da implementação, evitando divergências entre o comportamento planejado e o sistema desenvolvido.
+
+Se um requisito mudar, a alteração deve ser registrada na documentação e refletida nos testes correspondentes.
+
+---
+
+## 11. Riscos e medidas preventivas
+
+| Risco | Impacto | Medida preventiva |
+|---|---|---|
+| Dificuldade de integração do SQLite | Alto | Validar a biblioteca antes de desenvolver os módulos |
+| Falta de tempo para implementar todos os módulos | Alto | Priorizar o fluxo principal e manter o status do backlog atualizado |
+| Inconsistência entre cadastros relacionados | Alto | Utilizar identificadores e restrições de integridade |
+| Erros de entrada no terminal | Médio | Validar os dados e tratar entradas inválidas |
+| Regras de negócio ambíguas | Médio | Documentar as transições e condições antes de implementá-las |
+| Documentação divergente do código | Médio | Atualizar os documentos a cada mudança relevante |
+| Falta de testes integrados | Alto | Reservar uma etapa específica para validar o fluxo completo |
+
+---
+
+## 12. Histórico de alterações
+
+| Versão | Descrição | Status |
+|---|---|---|
+| 1.0 | Criação do backlog inicial e organização das histórias de usuário | Planejado |
+
+---
+
+## 13. Considerações finais
+
+O backlog do TechFix Manager estabelece uma sequência de desenvolvimento orientada por prioridades, dependências e critérios verificáveis.
+
+A implementação será conduzida de forma incremental, começando pela validação do ambiente e pela estruturação dos dados. Em seguida, serão desenvolvidos os cadastros, as ordens de serviço, os diagnósticos, os orçamentos, o estoque, os pagamentos, as entregas e os relatórios.
+
+O acompanhamento do backlog permitirá identificar atividades pendentes, registrar decisões técnicas e demonstrar a evolução do projeto ao longo do desenvolvimento.
+
+**Status atual do documento:** elaborado.  
+**Status atual da implementação:** a confirmar durante o desenvolvimento.  
+**Próximo documento previsto:** `docs/03-modelagem-uml.md`.
