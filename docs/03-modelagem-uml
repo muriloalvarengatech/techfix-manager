@@ -1,0 +1,729 @@
+# Modelagem UML e de Dados | TechFix Manager
+
+**Projeto:** TechFix Manager  
+**Versão:** 1.0  
+**Documento:** Modelagem UML e de Dados  
+**Status:** Proposta de modelagem  
+**Linguagem de programação:** C  
+**Banco de dados previsto:** SQLite, condicionado à validação do ambiente
+
+---
+
+## 1. Introdução
+
+Este documento apresenta a modelagem do sistema TechFix Manager, desenvolvido como proposta de solução para organizar os processos de uma empresa de manutenção e suporte técnico de equipamentos eletrônicos.
+
+A modelagem descreve os principais atores, entidades, relacionamentos e fluxos operacionais do sistema. Seu objetivo é orientar a implementação, reduzir ambiguidades nas regras de negócio e manter a coerência entre os requisitos funcionais, o banco de dados e o código-fonte.
+
+São utilizados diagramas UML para representar as funcionalidades, a estrutura conceitual e o comportamento do sistema. Também é apresentada uma proposta de modelo relacional para orientar a criação das tabelas em SQLite.
+
+Os diagramas representam o planejamento do sistema. Sua correspondência com o código deverá ser verificada após a implementação.
+
+## 2. Objetivos da modelagem
+
+A modelagem tem os seguintes objetivos:
+
+- Identificar os usuários e suas responsabilidades.
+- Representar as funcionalidades disponíveis.
+- Definir as principais entidades e seus relacionamentos.
+- Descrever o fluxo de atendimento de uma ordem de serviço.
+- Orientar a criação do banco de dados.
+- Facilitar a divisão do programa em funções e módulos na linguagem C.
+- Apoiar os testes funcionais e de integração.
+- Fornecer documentação técnica para manutenção e evolução do projeto.
+
+## 3. Atores do sistema
+
+O sistema considera os seguintes atores principais:
+
+| Ator | Responsabilidades |
+|---|---|
+| Funcionário | Cadastrar clientes e equipamentos, abrir ordens de serviço, consultar informações, registrar orçamentos e pagamentos quando autorizado e acompanhar entregas |
+| Técnico | Consultar ordens atribuídas ou disponíveis, registrar diagnósticos e atualizar informações técnicas conforme suas permissões |
+| Responsável pela gestão | Consultar relatórios, históricos, movimentações de estoque e informações financeiras, conforme as permissões definidas |
+
+O responsável pela gestão é um papel funcional previsto na modelagem. Sua implementação poderá ser associada a um perfil específico ou a permissões adicionais de um usuário, conforme a decisão registrada na especificação.
+
+Os perfis devem ter responsabilidades distintas. A autorização de cada operação deverá ser verificada pelo sistema, e não apenas pela opção exibida no menu.
+
+## 4. Diagrama de casos de uso
+
+O diagrama de casos de uso apresenta as principais interações entre os atores e o TechFix Manager.
+
+```mermaid
+flowchart LR
+    F[Funcionário]
+    T[Técnico]
+    G[Responsável pela gestão]
+
+    subgraph S["TechFix Manager"]
+        U1([Gerenciar clientes])
+        U2([Gerenciar equipamentos])
+        U3([Abrir ordem de serviço])
+        U4([Consultar ordem de serviço])
+        U5([Registrar diagnóstico])
+        U6([Elaborar orçamento])
+        U7([Atualizar status da ordem])
+        U8([Gerenciar estoque])
+        U9([Registrar pagamento])
+        U10([Registrar entrega])
+        U11([Consultar relatórios])
+        U12([Gerenciar usuários])
+    end
+
+    F --> U1
+    F --> U2
+    F --> U3
+    F --> U4
+    F --> U6
+    F --> U9
+    F --> U10
+    F --> U12
+
+    T --> U4
+    T --> U5
+    T --> U7
+    T --> U8
+
+    G --> U11
+    G --> U4
+    G --> U8
+    G --> U9
+```
+
+**Figura 1.** Casos de uso do TechFix Manager.  
+**Fonte:** Elaborado pelo autor.
+
+### 4.1 Interpretação
+
+O funcionário é responsável principalmente pelas atividades administrativas relacionadas ao recebimento e acompanhamento dos equipamentos.
+
+O técnico atua nas atividades relacionadas à análise e execução do serviço. O acesso a informações de estoque e a alteração de status devem respeitar as permissões definidas para seu perfil.
+
+O responsável pela gestão consulta informações consolidadas para acompanhar a operação. Esse papel poderá acumular outras responsabilidades, desde que o controle de acesso seja definido de maneira explícita.
+
+O diagrama apresenta as principais funcionalidades, mas não substitui as regras de autorização nem os critérios de aceitação descritos na especificação e no backlog.
+
+## 5. Diagrama de classes conceitual
+
+O diagrama a seguir representa as principais entidades do domínio do problema e seus relacionamentos. Embora o programa seja desenvolvido em C, a UML é utilizada para organizar o modelo conceitual, que posteriormente será traduzido em estruturas de dados e tabelas relacionais.
+
+```mermaid
+classDiagram
+    class Usuario {
+        +int id
+        +string nome
+        +string login
+        +string perfil
+        +string ativo
+    }
+
+    class Cliente {
+        +int id
+        +string nome
+        +string telefone
+        +string email
+        +string endereco
+    }
+
+    class Equipamento {
+        +int id
+        +string tipo
+        +string marca
+        +string modelo
+        +string numeroSerie
+        +string descricao
+    }
+
+    class OrdemServico {
+        +int id
+        +string dataAbertura
+        +string problemaRelatado
+        +string status
+        +double valorTotal
+    }
+
+    class Diagnostico {
+        +int id
+        +string descricao
+        +string solucaoProposta
+        +string dataRegistro
+    }
+
+    class Orcamento {
+        +int id
+        +double valorPecas
+        +double valorMaoDeObra
+        +double valorTotal
+        +string situacao
+    }
+
+    class Peca {
+        +int id
+        +string descricao
+        +int quantidadeEstoque
+        +double precoUnitario
+    }
+
+    class MovimentacaoEstoque {
+        +int id
+        +string tipo
+        +int quantidade
+        +string dataMovimentacao
+    }
+
+    class Pagamento {
+        +int id
+        +double valor
+        +string dataPagamento
+        +string formaPagamento
+    }
+
+    class Entrega {
+        +int id
+        +string situacao
+        +string dataEntrega
+        +string observacao
+    }
+
+    class HistoricoStatus {
+        +int id
+        +string statusAnterior
+        +string statusNovo
+        +string dataAlteracao
+    }
+
+    Cliente "1" --> "0..*" Equipamento : possui
+    Cliente "1" --> "0..*" OrdemServico : solicita
+    Equipamento "1" --> "0..*" OrdemServico : recebe atendimento
+    Usuario "1" --> "0..*" OrdemServico : registra
+    OrdemServico "1" --> "0..*" Diagnostico : possui
+    OrdemServico "1" --> "0..*" Orcamento : pode possuir
+    OrdemServico "1" --> "0..*" Pagamento : recebe
+    OrdemServico "1" --> "0..1" Entrega : possui
+    OrdemServico "1" --> "0..*" HistoricoStatus : registra
+    Peca "1" --> "0..*" MovimentacaoEstoque : recebe movimentacoes
+    OrdemServico "0..1" --> "0..*" MovimentacaoEstoque : pode consumir
+    Usuario "1" --> "0..*" Diagnostico : registra
+```
+
+**Figura 2.** Diagrama de classes conceitual.  
+**Fonte:** Elaborado pelo autor.
+
+### 5.1 Descrição das entidades
+
+**Usuario:** representa os funcionários e técnicos autorizados a utilizar o sistema. O perfil determina quais operações podem ser executadas.
+
+**Cliente:** armazena os dados necessários para identificar a pessoa responsável pelo equipamento e entrar em contato quando necessário.
+
+**Equipamento:** representa o dispositivo recebido para manutenção. Cada equipamento está associado a um cliente.
+
+**OrdemServico:** representa o atendimento formalizado. Reúne informações sobre o recebimento, o problema relatado, o status e os valores associados ao serviço.
+
+**Diagnostico:** registra a avaliação técnica e a solução recomendada ou identificada para uma ordem de serviço.
+
+**Orcamento:** registra os custos previstos para a manutenção, incluindo peças e mão de obra, além da situação do orçamento.
+
+**Peca:** representa os itens utilizados nos reparos e as respectivas quantidades disponíveis.
+
+**MovimentacaoEstoque:** registra entradas e saídas de peças, permitindo acompanhar a variação do estoque e, quando aplicável, relacionar o consumo a uma ordem de serviço.
+
+**Pagamento:** registra os valores recebidos e suas informações de controle. Uma ordem poderá ter vários pagamentos, caso sejam admitidos pagamentos parciais.
+
+**Entrega:** representa o acompanhamento da devolução do equipamento ao cliente.
+
+**HistoricoStatus:** armazena as alterações de situação das ordens de serviço, permitindo reconstruir o andamento do atendimento.
+
+### 5.2 Interpretação dos relacionamentos
+
+Um cliente pode possuir vários equipamentos e solicitar diversos atendimentos ao longo do tempo.
+
+Um equipamento pode estar associado a várias ordens de serviço ao longo de sua vida útil, mas cada ordem deve apontar para um único equipamento e um único cliente responsável.
+
+Uma ordem pode possuir vários registros de diagnóstico, orçamentos, pagamentos e alterações de status. O modelo permite preservar o histórico em vez de substituir todas as informações anteriores por um único registro atualizado.
+
+A movimentação de estoque pode ocorrer sem estar vinculada a uma ordem, como em uma entrada de compra. Já uma saída relacionada a um reparo poderá indicar a ordem responsável pelo consumo.
+
+As cardinalidades representam a proposta conceitual. Restrições adicionais, como impedir duplicidade de número de série quando informado, deverão ser definidas no modelo lógico e nas regras de negócio.
+
+## 6. Modelo de dados relacional proposto
+
+O modelo relacional traduz as entidades conceituais em tabelas. A proposta abaixo considera SQLite como banco de dados, após a validação técnica prevista no backlog.
+
+### 6.1 Tabela `usuarios`
+
+| Campo | Tipo sugerido | Descrição |
+|---|---|---|
+| id | INTEGER | Chave primária |
+| nome | TEXT | Nome do usuário |
+| login | TEXT | Identificação de acesso |
+| senha_hash | TEXT | Representação protegida da credencial, se houver autenticação por senha |
+| perfil | TEXT | Perfil do usuário |
+| ativo | INTEGER | Indica se o usuário está ativo |
+
+O campo `login` deverá possuir restrição de unicidade se for utilizado para autenticação. A credencial não deverá ser armazenada em texto puro.
+
+### 6.2 Tabela `clientes`
+
+| Campo | Tipo sugerido | Descrição |
+|---|---|---|
+| id | INTEGER | Chave primária |
+| nome | TEXT | Nome do cliente |
+| telefone | TEXT | Telefone para contato |
+| email | TEXT | Endereço eletrônico |
+| endereco | TEXT | Endereço, se necessário |
+
+Os dados coletados devem se limitar ao necessário para as atividades de atendimento.
+
+### 6.3 Tabela `equipamentos`
+
+| Campo | Tipo sugerido | Descrição |
+|---|---|---|
+| id | INTEGER | Chave primária |
+| cliente_id | INTEGER | Referência ao cliente |
+| tipo | TEXT | Categoria do equipamento |
+| marca | TEXT | Fabricante |
+| modelo | TEXT | Modelo |
+| numero_serie | TEXT | Número de série, quando disponível |
+| descricao | TEXT | Descrição ou observações |
+
+O campo `cliente_id` referencia `clientes.id`.
+
+### 6.4 Tabela `ordens_servico`
+
+| Campo | Tipo sugerido | Descrição |
+|---|---|---|
+| id | INTEGER | Chave primária |
+| cliente_id | INTEGER | Cliente responsável |
+| equipamento_id | INTEGER | Equipamento atendido |
+| usuario_id | INTEGER | Usuário responsável pelo registro |
+| data_abertura | TEXT | Data de abertura |
+| problema_relatado | TEXT | Descrição inicial do problema |
+| status | TEXT | Situação atual da ordem |
+
+Os identificadores de cliente, equipamento e usuário deverão possuir referências válidas. O modelo físico deverá definir também como garantir que o equipamento selecionado pertence ao cliente informado na ordem.
+
+### 6.5 Tabela `diagnosticos`
+
+| Campo | Tipo sugerido | Descrição |
+|---|---|---|
+| id | INTEGER | Chave primária |
+| ordem_id | INTEGER | Ordem de serviço relacionada |
+| usuario_id | INTEGER | Técnico que registrou o diagnóstico |
+| descricao | TEXT | Resultado da análise |
+| solucao_proposta | TEXT | Procedimento recomendado |
+| data_registro | TEXT | Data do registro |
+
+O relacionamento com a ordem de serviço permite consultar o histórico técnico do atendimento.
+
+### 6.6 Tabela `orcamentos`
+
+| Campo | Tipo sugerido | Descrição |
+|---|---|---|
+| id | INTEGER | Chave primária |
+| ordem_id | INTEGER | Ordem relacionada |
+| valor_pecas | NUMERIC | Valor previsto das peças |
+| valor_mao_de_obra | NUMERIC | Valor da mão de obra |
+| valor_total | NUMERIC | Valor total calculado |
+| situacao | TEXT | Situação do orçamento |
+| data_criacao | TEXT | Data de criação |
+
+A regra de cálculo deverá garantir que o total corresponda aos componentes registrados. O projeto deverá definir se os valores serão recalculados em cada consulta ou persistidos com validação.
+
+### 6.7 Tabela `pecas`
+
+| Campo | Tipo sugerido | Descrição |
+|---|---|---|
+| id | INTEGER | Chave primária |
+| descricao | TEXT | Nome ou descrição da peça |
+| quantidade_estoque | INTEGER | Quantidade disponível |
+| preco_unitario | NUMERIC | Preço unitário de referência |
+
+A quantidade em estoque não poderá ser negativa. Os valores financeiros deverão ser validados antes de serem gravados.
+
+### 6.8 Tabela `movimentacoes_estoque`
+
+| Campo | Tipo sugerido | Descrição |
+|---|---|---|
+| id | INTEGER | Chave primária |
+| peca_id | INTEGER | Peça movimentada |
+| ordem_id | INTEGER | Ordem associada, quando aplicável |
+| usuario_id | INTEGER | Usuário responsável pela operação |
+| tipo | TEXT | Entrada ou saída |
+| quantidade | INTEGER | Quantidade movimentada |
+| data_movimentacao | TEXT | Data da operação |
+
+A movimentação deve registrar uma quantidade positiva e identificar explicitamente se representa entrada ou saída. A atualização do saldo deverá ocorrer de forma consistente com o registro da movimentação.
+
+### 6.9 Tabela `pagamentos`
+
+| Campo | Tipo sugerido | Descrição |
+|---|---|---|
+| id | INTEGER | Chave primária |
+| ordem_id | INTEGER | Ordem relacionada |
+| valor | NUMERIC | Valor recebido |
+| data_pagamento | TEXT | Data do pagamento |
+| forma_pagamento | TEXT | Forma de pagamento |
+| observacao | TEXT | Informação complementar |
+
+O saldo pendente poderá ser calculado pela diferença entre o valor aprovado do serviço e a soma dos pagamentos registrados, conforme as regras financeiras definidas para o projeto.
+
+### 6.10 Tabela `entregas`
+
+| Campo | Tipo sugerido | Descrição |
+|---|---|---|
+| id | INTEGER | Chave primária |
+| ordem_id | INTEGER | Ordem relacionada |
+| situacao | TEXT | Situação da entrega |
+| data_entrega | TEXT | Data da entrega efetiva |
+| observacao | TEXT | Informação complementar |
+
+O modelo prevê, inicialmente, no máximo um registro de entrega por ordem. Essa decisão deverá ser revista caso seja necessário registrar tentativas ou eventos múltiplos de entrega.
+
+### 6.11 Tabela `historico_status`
+
+| Campo | Tipo sugerido | Descrição |
+|---|---|---|
+| id | INTEGER | Chave primária |
+| ordem_id | INTEGER | Ordem relacionada |
+| usuario_id | INTEGER | Usuário que realizou a alteração |
+| status_anterior | TEXT | Situação anterior |
+| status_novo | TEXT | Nova situação |
+| data_alteracao | TEXT | Data da alteração |
+
+A tabela permite preservar o histórico de mudanças de status. O registro deve ser criado em conjunto com a atualização da ordem, de modo a evitar que uma operação seja gravada sem a outra.
+
+**Observação sobre o modelo físico:** os tipos apresentados são sugestões compatíveis com a proposta de SQLite. Restrições `NOT NULL`, `UNIQUE`, `CHECK`, chaves estrangeiras e índices deverão ser especificados no script definitivo do banco.
+
+## 7. Diagrama conceitual de entidades e relacionamentos
+
+O diagrama a seguir destaca os principais relacionamentos de dados, independentemente dos menus e das telas do programa.
+
+```mermaid
+erDiagram
+    CLIENTES ||--o{ EQUIPAMENTOS : possui
+    CLIENTES ||--o{ ORDENS_SERVICO : solicita
+    EQUIPAMENTOS ||--o{ ORDENS_SERVICO : recebe
+    USUARIOS ||--o{ ORDENS_SERVICO : registra
+    USUARIOS ||--o{ DIAGNOSTICOS : registra
+    ORDENS_SERVICO ||--o{ DIAGNOSTICOS : possui
+    ORDENS_SERVICO ||--o{ ORCAMENTOS : possui
+    ORDENS_SERVICO ||--o{ PAGAMENTOS : recebe
+    ORDENS_SERVICO ||--o| ENTREGAS : possui
+    ORDENS_SERVICO ||--o{ HISTORICO_STATUS : registra
+    USUARIOS ||--o{ HISTORICO_STATUS : altera
+    PECAS ||--o{ MOVIMENTACOES_ESTOQUE : movimenta
+    ORDENS_SERVICO o|--o{ MOVIMENTACOES_ESTOQUE : consome
+    USUARIOS ||--o{ MOVIMENTACOES_ESTOQUE : registra
+```
+
+**Figura 3.** Diagrama conceitual de entidades e relacionamentos.  
+**Fonte:** Elaborado pelo autor.
+
+O diagrama evidencia que as ordens de serviço funcionam como elemento central do processo operacional. Elas conectam o equipamento atendido aos diagnósticos, orçamentos, pagamentos, movimentações de estoque e informações de entrega.
+
+## 8. Diagrama de atividades do atendimento
+
+O diagrama de atividades descreve o fluxo geral desde o recebimento do equipamento até a conclusão do atendimento.
+
+```mermaid
+flowchart TD
+    A([Início]) --> B[Identificar ou cadastrar cliente]
+    B --> C[Cadastrar ou selecionar equipamento]
+    C --> D[Abrir ordem de serviço]
+    D --> E[Realizar diagnóstico técnico]
+    E --> F[Elaborar orçamento]
+    F --> G{Orçamento aprovado?}
+
+    G -- Não --> H[Registrar recusa ou pendência]
+    H --> I[Atualizar situação da ordem]
+    I --> J([Aguardar decisão ou encerrar conforme regras])
+
+    G -- Sim --> K{Há peças necessárias?}
+    K -- Sim --> L{Estoque disponível?}
+    L -- Não --> M[Registrar falta de peça]
+    M --> N[Aguardar reposição ou decisão]
+    N --> K
+
+    L -- Sim --> O[Executar manutenção]
+    K -- Não --> O
+
+    O --> P[Registrar conclusão técnica]
+    P --> Q[Atualizar status da ordem]
+    Q --> R[Registrar pagamento conforme condições]
+    R --> S{Atende às regras de liberação?}
+    S -- Não --> T[Manter equipamento aguardando liberação]
+    T --> R
+    S -- Sim --> U[Registrar entrega]
+    U --> V[Consultar histórico e relatório]
+    V --> W([Fim])
+```
+
+**Figura 4.** Fluxo de atividades de uma ordem de serviço.  
+**Fonte:** Elaborado pelo autor.
+
+### 8.1 Regras relacionadas ao fluxo
+
+1. A ordem deve ser criada somente após a identificação do cliente e do equipamento.
+2. O diagnóstico deve estar associado a uma ordem existente.
+3. O orçamento deve ser registrado antes da etapa de execução que exige aprovação.
+4. A falta de peças deve ser identificada antes de registrar seu consumo.
+5. O estoque não pode ficar negativo.
+6. A conclusão técnica e a liberação financeira devem seguir as regras de negócio.
+7. A entrega deve ser registrada para uma ordem válida.
+8. As mudanças relevantes de status devem ser preservadas no histórico.
+
+O fluxo é uma representação inicial. As condições exatas para recusa de orçamento, cancelamento, pagamentos pendentes e liberação do equipamento deverão ser formalizadas na implementação das regras de negócio.
+
+## 9. Diagrama de sequência da abertura de ordem de serviço
+
+O diagrama de sequência representa a troca de informações entre o usuário, a interface de terminal, a lógica do sistema e a camada de persistência.
+
+```mermaid
+sequenceDiagram
+    actor F as Funcionário
+    participant I as Interface de terminal
+    participant S as Serviço de ordens
+    participant D as Banco de dados
+
+    F->>I: Solicita abertura de ordem
+    I->>F: Solicita cliente e equipamento
+    F->>I: Informa identificadores e problema
+    I->>S: Envia dados da ordem
+    S->>D: Consulta cliente e equipamento
+    D-->>S: Retorna registros encontrados
+
+    alt Dados válidos
+        S->>D: Insere ordem com status inicial
+        D-->>S: Retorna identificador da ordem
+        S-->>I: Confirma abertura
+        I-->>F: Exibe número da ordem
+    else Dados inválidos ou inexistentes
+        S-->>I: Retorna erro de validação
+        I-->>F: Exibe mensagem de correção
+    end
+```
+
+**Figura 5.** Sequência de abertura de uma ordem de serviço.  
+**Fonte:** Elaborado pelo autor.
+
+### 9.1 Interpretação
+
+O funcionário inicia a operação por meio da interface. A lógica de negócio valida as informações e consulta os registros relacionados antes de tentar criar a ordem.
+
+A gravação só deve ocorrer quando os dados obrigatórios forem válidos. Em caso de falha, a interface deve apresentar uma mensagem adequada, sem informar que a operação foi concluída.
+
+Na implementação em C, essas responsabilidades poderão ser distribuídas entre funções de interface, validação, regras de negócio e acesso ao banco.
+
+## 10. Arquitetura lógica proposta
+
+A arquitetura lógica divide o sistema em camadas para evitar que todas as responsabilidades fiquem concentradas na função `main()`.
+
+```mermaid
+flowchart TD
+    U[Usuário] --> I[Camada de interface: menus e entradas]
+    I --> V[Camada de validação]
+    V --> N[Camada de regras de negócio]
+    N --> R[Camada de acesso a dados]
+    R --> DB[(Banco SQLite)]
+    N --> E[Tratamento de erros]
+    R --> E
+    E --> I
+```
+
+**Figura 6.** Arquitetura lógica proposta.  
+**Fonte:** Elaborado pelo autor.
+
+### 10.1 Camada de interface
+
+Responsável por apresentar menus, receber dados e exibir resultados. Não deve concentrar regras complexas de negócio nem executar consultas SQL diretamente em todos os módulos.
+
+### 10.2 Camada de validação
+
+Responsável por verificar entradas obrigatórias, formatos, intervalos numéricos e consistência básica antes de executar operações.
+
+### 10.3 Camada de regras de negócio
+
+Responsável por aplicar as condições do sistema, como transições de status, disponibilidade de peças, cálculo de saldo e regras de liberação.
+
+### 10.4 Camada de acesso a dados
+
+Responsável por executar operações de gravação, consulta, atualização e exclusão autorizada. Quando utilizado SQLite, deverá tratar os retornos da biblioteca e as falhas de execução.
+
+### 10.5 Tratamento de erros
+
+Responsável por padronizar a comunicação de erros e garantir que falhas previsíveis sejam tratadas adequadamente. O tratamento de erros deve atuar em conjunto com as outras camadas.
+
+## 11. Organização prevista do código em C
+
+A arquitetura lógica poderá ser traduzida em uma estrutura de arquivos como a seguinte:
+
+```text
+TechFix-Manager/
+├── README.md
+├── docs/
+│   ├── 01-especificacao-do-sistema.md
+│   ├── 02-backlog.md
+│   └── 03-modelagem-uml.md
+├── src/
+│   ├── main.c
+│   ├── menu.c
+│   ├── menu.h
+│   ├── clientes.c
+│   ├── clientes.h
+│   ├── equipamentos.c
+│   ├── equipamentos.h
+│   ├── ordens_servico.c
+│   ├── ordens_servico.h
+│   ├── diagnosticos.c
+│   ├── diagnosticos.h
+│   ├── orcamentos.c
+│   ├── orcamentos.h
+│   ├── estoque.c
+│   ├── estoque.h
+│   ├── pagamentos.c
+│   ├── pagamentos.h
+│   ├── entregas.c
+│   ├── entregas.h
+│   ├── relatorios.c
+│   ├── relatorios.h
+│   ├── database.c
+│   └── database.h
+├── database/
+│   └── schema.sql
+└── tests/
+    └── casos-de-teste.md
+```
+
+Essa estrutura é uma proposta, não uma lista de arquivos já implementados. Os módulos poderão ser ajustados conforme a evolução do projeto e a configuração do compilador.
+
+### 11.1 Responsabilidade dos principais arquivos
+
+| Arquivo | Responsabilidade prevista |
+|---|---|
+| `main.c` | Inicialização e fluxo principal do programa |
+| `menu.c` | Menus e navegação entre módulos |
+| `clientes.c` | Operações relacionadas a clientes |
+| `equipamentos.c` | Cadastro e consulta de equipamentos |
+| `ordens_servico.c` | Abertura, consulta e atualização de ordens |
+| `diagnosticos.c` | Registro e consulta de diagnósticos |
+| `orcamentos.c` | Cálculos e controle de orçamentos |
+| `estoque.c` | Cadastro de peças e movimentações |
+| `pagamentos.c` | Registro de pagamentos e consulta de saldos |
+| `entregas.c` | Controle da situação de entrega |
+| `relatorios.c` | Consultas consolidadas e históricos |
+| `database.c` | Conexão e operações compartilhadas de persistência |
+| `schema.sql` | Criação das tabelas e restrições do banco |
+
+A separação em arquivos `.c` e `.h` permite declarar interfaces de funções e organizar o acesso aos módulos.
+
+## 12. Normalização e integridade dos dados
+
+A normalização tem como objetivo reduzir redundâncias e evitar anomalias de inserção, atualização e exclusão.
+
+### 12.1 Primeira Forma Normal (1FN)
+
+Cada campo deverá armazenar um valor individual, sem agrupar listas de equipamentos, pagamentos ou peças em uma única coluna.
+
+Por exemplo, os pagamentos de uma ordem deverão ser armazenados em registros próprios na tabela `pagamentos`, e não em uma sequência de valores dentro da tabela `ordens_servico`.
+
+### 12.2 Segunda Forma Normal (2FN)
+
+As tabelas devem atender à primeira forma normal e os atributos não chave devem depender integralmente da chave primária.
+
+Como as entidades principais utilizam identificadores simples como chave primária, não se espera dependência parcial de uma chave composta nessas tabelas. Tabelas associativas futuras deverão ser analisadas de acordo com suas respectivas chaves.
+
+### 12.3 Terceira Forma Normal (3FN)
+
+Os atributos não chave devem depender da chave primária, e não de outros atributos não chave.
+
+Os dados do cliente, por exemplo, devem ficar na tabela `clientes`, enquanto a tabela `ordens_servico` armazena sua referência por meio de `cliente_id`. Dessa forma, alterações cadastrais não exigem a atualização de todas as ordens anteriores.
+
+### 12.4 Restrições de integridade
+
+O banco deverá utilizar, quando aplicável:
+
+- Chaves primárias para identificar os registros.
+- Chaves estrangeiras para preservar relacionamentos.
+- Restrições `NOT NULL` para campos obrigatórios.
+- Restrições `UNIQUE` para identificadores que não podem se repetir.
+- Restrições `CHECK` para valores e estados permitidos.
+- Transações para operações que exijam gravação conjunta.
+- Índices para consultas frequentes, após avaliação das necessidades.
+
+No SQLite, a aplicação deverá habilitar e verificar o suporte às restrições de chaves estrangeiras na conexão, além de tratar corretamente as falhas retornadas pelas operações.
+
+A conformidade definitiva com as formas normais deverá ser confirmada após a definição do esquema físico e das dependências funcionais.
+
+## 13. Segurança, privacidade e acessibilidade
+
+A modelagem considera os seguintes cuidados:
+
+- Coletar apenas os dados pessoais necessários para o atendimento.
+- Restringir operações conforme o perfil do usuário.
+- Não armazenar senhas em texto puro.
+- Utilizar consultas parametrizadas para evitar a composição insegura de comandos SQL.
+- Validar entradas e tratar erros de persistência.
+- Evitar expor informações pessoais em relatórios desnecessários.
+- Apresentar mensagens claras e menus consistentes.
+- Não depender exclusivamente de cores para comunicar estados ou erros.
+
+O tratamento de dados pessoais deverá observar os princípios aplicáveis da Lei Geral de Proteção de Dados Pessoais (LGPD), considerando a finalidade, a necessidade, a segurança e o acesso apropriado às informações.
+
+A implementação desses cuidados deverá ser verificada por testes e revisão do código. Sua descrição na modelagem não comprova, por si só, que já estejam implementados.
+
+## 14. Relação com o backlog
+
+A modelagem apoia as tarefas descritas em `docs/02-backlog.md`, especialmente:
+
+| Área | Relação com o backlog |
+|---|---|
+| Estrutura e arquitetura | Organização do projeto e separação de responsabilidades |
+| Banco de dados | Validação do SQLite e definição do esquema |
+| Clientes e equipamentos | Cadastros e relacionamentos |
+| Ordens de serviço | Abertura, consulta e atualização de status |
+| Diagnósticos e orçamentos | Registro técnico e cálculo de valores |
+| Estoque | Peças, movimentações e controle de disponibilidade |
+| Pagamentos | Registro financeiro e cálculo de saldo |
+| Entregas | Controle da liberação e devolução |
+| Relatórios | Consulta de históricos e informações consolidadas |
+| Testes | Verificação de relacionamentos, regras e fluxo integrado |
+
+Caso a implementação revele a necessidade de alterar uma entidade, relacionamento ou regra, a mudança deverá ser refletida no backlog e neste documento.
+
+## 15. Limitações e decisões pendentes
+
+As seguintes decisões deverão ser confirmadas durante a implementação:
+
+1. A viabilidade de utilizar SQLite no ambiente escolhido.
+2. A estratégia definitiva de autenticação e gerenciamento de usuários.
+3. Os estados válidos e as transições permitidas para ordens, orçamentos e entregas.
+4. As regras exatas para aprovação de orçamento, pagamentos parciais e liberação do equipamento.
+5. O tratamento de cancelamentos e ordens que não resultem em reparo.
+6. A necessidade de manter múltiplas versões de orçamento.
+7. A estratégia de representação de valores monetários e datas.
+8. A necessidade de registrar múltiplos eventos de entrega ou outros eventos históricos.
+
+Esses pontos não impedem a modelagem inicial, mas precisam ser definidos antes de implementar as funcionalidades que deles dependem.
+
+## 16. Conclusão
+
+A modelagem UML e de dados do TechFix Manager estabelece uma visão estruturada dos atores, das funcionalidades, das entidades e dos processos envolvidos no gerenciamento de uma assistência técnica.
+
+Os diagramas de casos de uso descrevem as interações esperadas; o diagrama conceitual organiza as entidades e os relacionamentos; os diagramas de atividades e sequência detalham o fluxo operacional; e a proposta de arquitetura orienta a divisão do programa em módulos.
+
+O modelo relacional fornece uma base para a construção do banco de dados, enquanto as considerações de normalização, integridade, segurança e acessibilidade orientam a implementação responsável.
+
+A próxima etapa consiste em validar o ambiente, criar o esquema SQL e começar a implementação incremental dos módulos em C, utilizando os critérios de aceitação e os casos de teste definidos no backlog.
+
+---
+
+## Referências
+
+OBJECT MANAGEMENT GROUP. *OMG Unified Modeling Language (OMG UML), Version 2.5.1*. 2017. Disponível em: https://www.omg.org/spec/UML/2.5.1. Acesso em: 27 out. 2026.
+
+SQLITE. *SQLite Documentation*. Disponível em: https://www.sqlite.org/docs.html. Acesso em: 27 out. 2026.
+
+BRASIL. *Lei nº 13.709, de 14 de agosto de 2018*. Lei Geral de Proteção de Dados Pessoais (LGPD). Disponível em: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm. Acesso em: 27 out. 2026.
+
+**Nota:** as referências acima fundamentam os conceitos gerais de UML, SQLite e proteção de dados. Os diagramas e as decisões específicas de modelagem foram elaborados para o projeto TechFix Manager.
