@@ -67,10 +67,10 @@ Projeto desenvolvido para fins acadêmicos no âmbito do PIM II. A organização
 - [x] Requisitos iniciais documentados.
 - [x] Atores e regras de negócio identificados.
 - [x] Modelos conceituais iniciais elaborados.
-- [ ] Estrutura do projeto em C.
-- [ ] Integração e validação do SQLite.
-- [ ] Implementação dos módulos.
-- [ ] Testes funcionais.
-- [ ] Documentação final e evidências.
+- [x] Estrutura do projeto em C.
+- [x] Integração e validação do SQLite.
+- [x] Implementação dos módulos.
+- [x] Testes funcionais.
+- [x] Documentação final e evidências.
 
 O status será atualizado conforme o desenvolvimento avançar.
