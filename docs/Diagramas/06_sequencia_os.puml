@@ -1,0 +1,101 @@
+@startuml
+title TechFix Manager 0.1.0 - Sequência resumida do ciclo de OS
+autonumber
+skinparam shadowing false
+skinparam sequenceMessageAlign left
+actor Atendente
+actor "Técnico" as Tecnico
+actor Gerente
+participant "Menus de terminal\nsrc/ui" as UI
+participant "Regras\nregras.c" as R
+participant "Segurança\nseguranca.c" as S
+participant "Dados\nsrc/dados" as D
+database SQLite as DB
+
+== Autenticação ==
+Atendente -> UI : login e senha
+UI -> D : usuario_autenticar(login, senha)
+D -> DB : SELECT usuario (sal, hash, ativo)
+DB --> D : registro
+D -> S : senha_confere(senha, sal, hash)
+S --> D : confere / não confere
+D --> UI : sessão ou "Usuário ou senha inválidos"
+note over UI, R
+  Cada menu exibe apenas as opções em que
+  perfil_pode(perfil, funcionalidade) = 1.
+end note
+
+== Abertura e atribuição ==
+Atendente -> UI : abrir OS (equipamento, problema)
+UI -> R : perfil_pode(F_OS_ABRIR)
+UI -> D : os_abrir
+D -> DB : SELECT equipamento/cliente (cliente ativo?)
+D -> DB : BEGIN; INSERT ordem_servico (Aberta)\nINSERT historico_status; COMMIT
+D --> UI : número da OS
+
+Atendente -> UI : atribuir técnico
+UI -> D : os_atribuir_tecnico
+D -> DB : UPDATE ordem_servico.tecnico_id\nINSERT observacao ("Técnico responsável")
+D --> UI : resultado (status não muda)
+
+== Diagnóstico e orçamento ==
+Tecnico -> UI : iniciar diagnóstico
+UI -> D : os_iniciar_diagnostico
+D -> R : status_pode_transitar(Aberta, Em diagnóstico)
+D -> DB : UPDATE status + INSERT historico_status
+Tecnico -> UI : registrar diagnóstico e peças previstas
+UI -> D : diagnostico_registrar
+D -> DB : INSERT/UPDATE diagnostico\nDELETE + INSERT diagnostico_peca
+Atendente -> UI : elaborar orçamento (serviços)
+UI -> R : orcamento_calcular_total
+UI -> D : orcamento_elaborar
+D -> DB : INSERT orcamento, orcamento_servico, orcamento_peca\n(preço congelado)
+D -> R : status_pode_transitar(Em diagnóstico, Aguardando aprovação)
+D -> DB : UPDATE status + INSERT historico_status
+D --> UI : resultado
+
+Atendente -> UI : registrar decisão do cliente
+UI -> D : orcamento_decidir(aprovado?)
+D -> DB : UPDATE orcamento SET decisao\nWHERE decisao IS NULL
+D -> DB : UPDATE status (Aprovada | Recusada) + histórico
+D --> UI : resultado
+
+== Manutenção (orçamento aprovado) ==
+Tecnico -> UI : iniciar manutenção
+UI -> D : manutencao_iniciar
+D -> DB : UPDATE status (Em manutenção) + histórico
+Tecnico -> UI : registrar serviço realizado
+UI -> D : manutencao_registrar_servico
+D -> DB : INSERT servico_realizado
+Tecnico -> UI : registrar peça utilizada
+UI -> D : manutencao_usar_peca
+D -> DB : BEGIN
+D -> DB : UPDATE peca.saldo (se saldo suficiente)\nINSERT movimentacao (S, os_id)\nINSERT peca_utilizada
+alt saldo suficiente e gravações OK
+  D -> DB : COMMIT
+else falha
+  D -> DB : ROLLBACK (nada é gravado)
+end
+D --> UI : resultado
+Tecnico -> UI : concluir manutenção
+UI -> D : manutencao_concluir
+D -> DB : INSERT conclusao_tecnica\nUPDATE status (Concluída) + histórico
+D --> UI : resultado
+
+== Pagamento, liberação, entrega e encerramento ==
+Atendente -> UI : registrar pagamento
+UI -> D : pagamento_registrar(valor, forma)
+D -> DB : INSERT pagamento (valor = total aprovado)
+D --> UI : resultado (status não muda)
+Atendente -> UI : liberar equipamento
+UI -> D : os_liberar
+D -> DB : UPDATE status (Liberada) + histórico
+Atendente -> UI : registrar entrega
+UI -> D : entrega_registrar(recebido_por)
+D -> DB : INSERT entrega\nUPDATE status (Entregue) + histórico
+Gerente -> UI : encerrar OS
+UI -> R : perfil_pode(F_ENCERRAR)
+UI -> D : os_encerrar
+D -> DB : UPDATE status (Encerrada) + histórico
+D --> UI : resultado
+@enduml

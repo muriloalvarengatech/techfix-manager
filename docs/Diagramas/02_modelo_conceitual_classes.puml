@@ -1,0 +1,182 @@
+@startuml
+title TechFix Manager 0.1.0 - Modelo Conceitual do Domínio
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+hide empty methods
+hide enum methods
+skinparam nodesep 40
+skinparam ranksep 60
+
+class Usuario {
+  id: inteiro
+  login: texto único
+  nome: texto
+  perfil: Perfil
+  senha_hash: texto
+  senha_sal: texto
+  ativo: booleano
+  criado_em: data/hora
+}
+class Cliente {
+  id: inteiro
+  nome: texto
+  telefone: texto
+  email: texto opcional
+  ativo: booleano
+  criado_em: data/hora
+}
+class Equipamento {
+  id: inteiro
+  tipo: texto
+  marca: texto
+  modelo: texto
+  identificador: texto único
+  descricao: texto opcional
+  criado_em: data/hora
+}
+class OrdemServico {
+  id: inteiro
+  problema: texto
+  status: StatusOS
+  aberta_em: data/hora
+  atualizada_em: data/hora
+}
+class HistoricoStatus {
+  id: inteiro
+  status_anterior: inteiro opcional
+  status_novo: inteiro
+  registrado_em: data/hora
+}
+class Observacao {
+  id: inteiro
+  texto: texto
+  registrada_em: data/hora
+}
+class Peca {
+  id: inteiro
+  codigo: texto único
+  descricao: texto
+  preco_centavos: inteiro
+  saldo: inteiro
+  criado_em: data/hora
+}
+class Movimentacao {
+  id: inteiro
+  tipo: E | S
+  quantidade: inteiro
+  motivo: texto
+  registrada_em: data/hora
+}
+class Diagnostico {
+  id: inteiro
+  descricao: texto
+  procedimento: texto
+  registrado_em: data/hora
+}
+class DiagnosticoPeca {
+  quantidade: inteiro
+}
+class Orcamento {
+  id: inteiro
+  criado_em: data/hora
+  decisao: A | R | nula
+  decidido_em: data/hora opcional
+}
+class OrcamentoServico {
+  id: inteiro
+  descricao: texto
+  valor_centavos: inteiro
+}
+class OrcamentoPeca {
+  quantidade: inteiro
+  preco_unit_centavos: inteiro
+}
+class ServicoRealizado {
+  id: inteiro
+  descricao: texto
+  registrado_em: data/hora
+}
+class PecaUtilizada {
+  id: inteiro
+  quantidade: inteiro
+  registrada_em: data/hora
+}
+class ConclusaoTecnica {
+  observacao_final: texto
+  concluida_em: data/hora
+}
+class Pagamento {
+  id: inteiro
+  valor_centavos: inteiro
+  forma: Dinheiro | Pix |
+    Cartão de débito | Cartão de crédito
+  registrado_em: data/hora
+}
+class Entrega {
+  id: inteiro
+  recebido_por: texto
+  registrada_em: data/hora
+}
+
+enum Perfil {
+  ATENDENTE = 1
+  TECNICO = 2
+  GERENTE = 3
+}
+enum StatusOS {
+  ABERTA = 1
+  EM_DIAGNOSTICO = 2
+  AGUARDANDO_APROVACAO = 3
+  APROVADA = 4
+  RECUSADA = 5
+  EM_MANUTENCAO = 6
+  CONCLUIDA = 7
+  LIBERADA = 8
+  ENTREGUE = 9
+  ENCERRADA = 10
+}
+Usuario ..> Perfil
+OrdemServico ..> StatusOS
+
+Cliente "1" -- "0..*" Equipamento
+Equipamento "1" -- "0..*" OrdemServico
+Usuario "1" -- "0..*" OrdemServico : abre
+Usuario "0..1" -- "0..*" OrdemServico : técnico atribuído
+OrdemServico "1" -- "0..*" HistoricoStatus
+Usuario "1" -- "0..*" HistoricoStatus
+OrdemServico "1" -- "0..*" Observacao
+Usuario "1" -- "0..*" Observacao
+OrdemServico "0..1" -- "0..*" Movimentacao : vinculada (opcional)
+Peca "1" -- "0..*" Movimentacao
+Usuario "1" -- "0..*" Movimentacao
+OrdemServico "1" -- "0..1" Diagnostico
+Usuario "1" -- "0..*" Diagnostico : técnico
+Diagnostico "1" -- "0..*" DiagnosticoPeca
+Peca "1" -- "0..*" DiagnosticoPeca
+OrdemServico "1" -- "0..1" Orcamento
+Usuario "1" -- "0..*" Orcamento : cria
+Usuario "0..1" -- "0..*" Orcamento : decide
+Orcamento "1" -- "0..*" OrcamentoServico
+Orcamento "1" -- "0..*" OrcamentoPeca
+Peca "1" -- "0..*" OrcamentoPeca
+OrdemServico "1" -- "0..*" ServicoRealizado
+Usuario "1" -- "0..*" ServicoRealizado
+OrdemServico "1" -- "0..*" PecaUtilizada
+Peca "1" -- "0..*" PecaUtilizada
+Movimentacao "1" -- "0..1" PecaUtilizada
+OrdemServico "1" -- "0..1" ConclusaoTecnica
+Usuario "1" -- "0..*" ConclusaoTecnica
+OrdemServico "1" -- "0..1" Pagamento
+Usuario "1" -- "0..*" Pagamento
+OrdemServico "1" -- "0..1" Entrega
+Usuario "1" -- "0..*" Entrega
+
+note bottom
+  Modelo conceitual derivado das tabelas do sql/schema.sql.
+  O código é C procedural: este diagrama usa classes UML apenas como
+  representação conceitual das entidades, não afirma que existam classes C++.
+  Movimentação pode existir sem OS (entrada ou saída avulsa).
+  Valores monetários são persistidos em centavos. Chaves e cardinalidades
+  seguem o esquema SQLite.
+end note
+@enduml

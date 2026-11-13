@@ -1,0 +1,67 @@
+@startuml
+title TechFix Manager 0.1.0 - Estados da Ordem de Serviço
+hide empty description
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #F8FAFC
+  BorderColor #0369A1
+}
+
+state "Aberta (1)" as Aberta
+state "Em diagnóstico (2)" as EmDiagnostico
+state "Aguardando aprovação (3)" as AguardandoAprovacao
+state "Aprovada (4)" as Aprovada
+state "Recusada (5)" as Recusada
+state "Em manutenção (6)" as EmManutencao
+state "Concluída tecnicamente (7)" as ConcluidaTecnica
+state "Liberada para entrega (8)" as LiberadaEntrega
+state "Entregue (9)" as Entregue
+state "Encerrada (10)" as Encerrada
+
+[*] --> Aberta : os_abrir\n[cliente ativo]
+Aberta --> EmDiagnostico : os_iniciar_diagnostico\n[técnico atribuído ou gerente]
+EmDiagnostico --> AguardandoAprovacao : orcamento_elaborar\n[diagnóstico registrado]
+AguardandoAprovacao --> Aprovada : orcamento_decidir\n(cliente aprova)
+AguardandoAprovacao --> Recusada : orcamento_decidir\n(cliente recusa)
+Aprovada --> EmManutencao : manutencao_iniciar\n[técnico atribuído ou gerente]
+EmManutencao --> ConcluidaTecnica : manutencao_concluir\n[≥ 1 serviço realizado]
+ConcluidaTecnica --> LiberadaEntrega : os_liberar\n[pagamento registrado\nou orçamento de valor zero]
+Recusada --> LiberadaEntrega : os_liberar\n(devolução sem reparo)
+LiberadaEntrega --> Entregue : entrega_registrar
+Entregue --> Encerrada : os_encerrar\n(Gerente)
+Encerrada --> [*]
+
+note right of EmDiagnostico
+  Diagnóstico pode ser registrado
+  ou corrigido enquanto a OS
+  estiver neste estado.
+end note
+
+note right of AguardandoAprovacao
+  Orçamento pode ser corrigido
+  antes da decisão (sem mudar o status).
+  A decisão é única e não pode ser alterada.
+end note
+
+note right of EmManutencao
+  Ações sem mudança de estado:
+  - registrar serviço realizado
+  - registrar peça utilizada
+    (baixa de estoque transacional)
+end note
+
+note right of ConcluidaTecnica
+  Pagamento é registrado neste
+  estado e não muda o status.
+end note
+
+note left of Aberta
+  A matriz TRANSICOES em regras.c
+  permite apenas estas transições.
+  Toda mudança grava historico_status.
+  Técnico pode ser trocado até
+  "Em manutenção"; observações são
+  aceitas em qualquer estado, exceto
+  "Encerrada".
+end note
+@enduml

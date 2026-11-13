@@ -1,0 +1,49 @@
+flowchart TD
+    A([Início]) --> B[Autenticar usuário]
+    B --> B1{Login válido em<br/>até 3 tentativas?}
+    B1 -- Não --> Z([Fim])
+    B1 -- Sim --> C[Selecionar equipamento<br/>cadastrar cliente e equipamento antes, se forem novos]
+    C --> E{Cliente ativo e<br/>problema informado?}
+    E -- Não --> X[Reativar cliente ou<br/>corrigir dados / cancelar]
+    X --> Z
+    E -- Sim --> F[Abrir OS e registrar problema<br/>Atendente ou Gerente]
+    F --> G[/Status: Aberta/]
+    G --> H[Atribuir técnico ativo<br/>registra observação; status não muda]
+    H --> I[Técnico atribuído inicia diagnóstico]
+    I --> I1[/Status: Em diagnóstico/]
+    I1 --> J[Registrar diagnóstico e peças previstas<br/>peças previstas não baixam estoque]
+    J --> K[Elaborar orçamento: serviços + peças previstas<br/>preço da peça congelado; alerta se faltar saldo]
+    K --> K1[/Status: Aguardando aprovação/]
+    K1 --> L{Decisão do cliente<br/>registrada uma única vez}
+    L -- Corrigir antes da decisão --> K
+    L -- Recusado --> N[/Status: Recusada/]
+    L -- Aprovado --> Q[/Status: Aprovada/]
+    Q --> R[Técnico atribuído inicia manutenção<br/>alerta se faltar saldo]
+    R --> R1[/Status: Em manutenção/]
+    R1 --> S{Registrar durante a manutenção}
+    S -- Serviço --> S1[Registrar serviço realizado]
+    S -- Peça --> U[Registrar peça utilizada<br/>baixa de estoque + peça utilizada<br/>na mesma transação]
+    U --> U1{Saldo suficiente?}
+    U1 -- Não --> U2[Nada é gravado]
+    U2 --> S
+    U1 -- Sim --> S
+    S1 --> S
+    S -- Concluir --> V0{Há ao menos um<br/>serviço realizado?}
+    V0 -- Não --> S
+    V0 -- Sim --> V[Registrar conclusão técnica<br/>com observação final]
+    V --> W[/Status: Concluída tecnicamente/]
+    W --> P0{Valor do orçamento<br/>aprovado maior que zero?}
+    P0 -- Sim --> P1[Registrar pagamento integral<br/>valor igual ao orçamento; status não muda]
+    P0 -- Não --> LB
+    P1 --> LB[Liberar equipamento para entrega]
+    N --> LB2[Liberar equipamento<br/>devolução sem reparo]
+    LB --> Y[/Status: Liberada para entrega/]
+    LB2 --> Y
+    Y --> AA[Registrar entrega<br/>nome de quem recebeu]
+    AA --> AB[/Status: Entregue/]
+    AB --> AC[Gerente encerra OS]
+    AC --> AD[/Status: Encerrada<br/>não aceita alterações/]
+    AD --> Z
+
+    classDef status fill:#E0F2FE,stroke:#0369A1,color:#0C4A6E
+    class G,I1,K1,N,Q,R1,W,Y,AB,AD status

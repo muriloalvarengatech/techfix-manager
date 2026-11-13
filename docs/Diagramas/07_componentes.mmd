@@ -1,0 +1,42 @@
+%%{init: {"flowchart": {"defaultRenderer": "elk"}}}%%
+flowchart TB
+  subgraph UI["Apresentação - terminal"]
+    MAIN["src/main.c<br/>menu principal"]
+    MENUS["src/ui<br/>ui_comum.c<br/>menu_cadastros.c<br/>menu_ordens.c<br/>menu_estoque.c<br/>menu_admin.c"]
+  end
+  subgraph RULES["Regras e segurança"]
+    REGRAS["src/regras/regras.c<br/>transições, permissões, cálculo"]
+    SEG["src/regras/seguranca.c<br/>sal, hash e política de senha"]
+  end
+  subgraph DATA["Persistência"]
+    CAD["src/dados/cadastros.c<br/>usuários, clientes, equipamentos"]
+    OS["src/dados/ordens.c<br/>fluxo da OS"]
+    EST["src/dados/estoque.c<br/>peças e movimentações"]
+    REL["src/dados/relatorios.c<br/>resumo e CSV"]
+    DB["src/dados/db.c<br/>conexão, execução SQL, transações"]
+    SCHEMA["src/dados/esquema.c<br/>ESQUEMA_SQL"]
+  end
+  SQLITE[("SQLite<br/>arquivo techfix.db")]
+  UTIL["src/util<br/>erro.c, validacao.c,<br/>io.c, sha256.c<br/><i>usado por todos os módulos</i>"]
+
+  MAIN --> MENUS
+  MAIN --> CAD
+  MAIN --> DB
+  MENUS --> REGRAS
+  MENUS --> CAD
+  MENUS --> OS
+  MENUS --> EST
+  MENUS --> REL
+  OS --> REGRAS
+  OS --> CAD
+  OS --> EST
+  CAD --> REGRAS
+  CAD --> SEG
+  CAD --> DB
+  OS --> DB
+  EST --> DB
+  REL --> DB
+  DB --> SCHEMA
+  DB --> SQLITE
+  SEG --> SQLITE
+  SEG -- sha256 --> UTIL

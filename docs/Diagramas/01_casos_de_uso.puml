@@ -1,0 +1,129 @@
+@startuml
+title TechFix Manager 0.1.0 - Casos de Uso (permissões implementadas)
+left to right direction
+skinparam linetype polyline
+skinparam nodesep 12
+skinparam ranksep 120
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F8FAFC
+  BorderColor #475569
+}
+
+actor "Usuário" as Usuario
+actor Atendente
+actor "Técnico" as Tecnico
+actor Gerente
+
+Atendente --|> Usuario
+Tecnico --|> Usuario
+Gerente --|> Atendente
+Gerente --|> Tecnico
+
+rectangle "TechFix Manager" {
+  package "Acesso" {
+    usecase "Autenticar usuário\n(até 3 tentativas)" as Auth
+    usecase "Trocar a própria senha" as Senha
+  }
+  package "Clientes e equipamentos" {
+    usecase "Consultar clientes" as CliC
+    usecase "Gerenciar clientes\n(cadastrar, editar,\ninativar/reativar)" as CliG
+    usecase "Consultar equipamentos\ne histórico de OS" as EqC
+    usecase "Gerenciar equipamentos\n(cadastrar, editar)" as EqG
+  }
+  package "Ordem de serviço" {
+    usecase "Consultar OS" as OSC
+    usecase "Abrir OS" as OSO
+    usecase "Atribuir técnico à OS" as OSA
+    usecase "Registrar observação na OS" as OSObs
+    usecase "Elaborar ou corrigir\norçamento" as Orc
+    usecase "Registrar decisão\ndo cliente" as Dec
+    usecase "Registrar pagamento" as Pag
+    usecase "Liberar equipamento\npara entrega" as Lib
+    usecase "Registrar entrega" as Entrega
+    usecase "Encerrar OS" as Enc
+  }
+  package "Diagnóstico e manutenção" {
+    usecase "Iniciar diagnóstico" as DiagI
+    usecase "Registrar ou corrigir\ndiagnóstico" as Diag
+    usecase "Iniciar manutenção" as ManI
+    usecase "Registrar serviço realizado" as ManS
+    usecase "Registrar peça utilizada" as ManP
+    usecase "Concluir manutenção" as ManC
+  }
+  package "Estoque" {
+    usecase "Consultar peças\ne movimentações" as PecC
+    usecase "Gerenciar peças\n(cadastrar, atualizar\ndescrição e preço)" as PecG
+    usecase "Registrar entrada\nde estoque" as Ent
+    usecase "Registrar saída\navulsa de estoque" as Sai
+    usecase "Baixar peça do estoque" as Baixa
+  }
+  package "Gestão" {
+    usecase "Consultar OS com filtros\ne histórico do cliente" as Hist
+    usecase "Emitir relatórios\n(resumo por status, CSV)" as Rel
+    usecase "Gerenciar usuários\n(cadastrar, listar, perfil,\nbloquear/desbloquear)" as Usu
+    usecase "Criar primeiro gerente\n(primeiro acesso)" as Prim
+  }
+}
+
+' --- Todos os perfis ---
+Usuario --> Auth
+Usuario --> Senha
+
+' --- Atendente (o Gerente herda) ---
+Atendente --> CliC
+Atendente --> CliG
+Atendente --> EqC
+Atendente --> EqG
+Atendente --> OSC
+Atendente --> OSO
+Atendente --> OSA
+Atendente --> OSObs
+Atendente --> Orc
+Atendente --> Dec
+Atendente --> PecC
+Atendente --> Pag
+Atendente --> Lib
+Atendente --> Entrega
+Atendente --> Hist
+
+' --- Técnico (o Gerente herda) ---
+Tecnico --> CliC
+Tecnico --> EqC
+Tecnico --> OSC
+Tecnico --> OSObs
+Tecnico --> DiagI
+Tecnico --> Diag
+Tecnico --> Orc
+Tecnico --> ManI
+Tecnico --> ManS
+Tecnico --> ManP
+Tecnico --> ManC
+Tecnico --> PecC
+Tecnico --> PecG
+Tecnico --> Ent
+Tecnico --> Hist
+
+' --- Exclusivos do Gerente ---
+Gerente --> Sai
+Gerente --> Enc
+Gerente --> Rel
+Gerente --> Usu
+Gerente --> Prim
+
+ManP ..> Baixa : <<include>>
+Sai ..> Baixa : <<include>>
+
+note bottom of Usuario
+  Associações reproduzem a matriz PERMISSOES de src/regras/regras.c.
+  O Gerente tem todas as 22 permissões: herda os casos do Atendente
+  e do Técnico e tem exclusivos saída avulsa, encerrar OS,
+  relatórios e usuários.
+  Etapas técnicas (diagnóstico e manutenção) exigem, além da permissão,
+  ser o técnico atribuído à OS ou gerente (exigir_responsavel em ordens.c).
+  "Registrar peça utilizada" baixa o estoque automaticamente
+  (estoque_saida), mesmo sem a permissão de saída avulsa.
+end note
+@enduml

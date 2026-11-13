@@ -1,0 +1,175 @@
+erDiagram
+    USUARIO {
+        INTEGER id PK
+        TEXT login UK
+        TEXT nome
+        INTEGER perfil
+        TEXT senha_hash
+        TEXT senha_sal
+        INTEGER ativo
+        TEXT criado_em
+    }
+    CLIENTE {
+        INTEGER id PK
+        TEXT nome
+        TEXT telefone
+        TEXT email
+        INTEGER ativo
+        TEXT criado_em
+    }
+    EQUIPAMENTO {
+        INTEGER id PK
+        INTEGER cliente_id FK
+        TEXT tipo
+        TEXT marca
+        TEXT modelo
+        TEXT identificador UK
+        TEXT descricao
+        TEXT criado_em
+    }
+    ORDEM_SERVICO {
+        INTEGER id PK
+        INTEGER equipamento_id FK
+        INTEGER aberta_por FK
+        INTEGER tecnico_id FK
+        TEXT problema
+        INTEGER status
+        TEXT aberta_em
+        TEXT atualizada_em
+    }
+    HISTORICO_STATUS {
+        INTEGER id PK
+        INTEGER os_id FK
+        INTEGER status_anterior
+        INTEGER status_novo
+        INTEGER usuario_id FK
+        TEXT registrado_em
+    }
+    OBSERVACAO {
+        INTEGER id PK
+        INTEGER os_id FK
+        INTEGER usuario_id FK
+        TEXT texto
+        TEXT registrada_em
+    }
+    PECA {
+        INTEGER id PK
+        TEXT codigo UK
+        TEXT descricao
+        INTEGER preco_centavos
+        INTEGER saldo
+        TEXT criado_em
+    }
+    MOVIMENTACAO {
+        INTEGER id PK
+        INTEGER peca_id FK
+        TEXT tipo
+        INTEGER quantidade
+        TEXT motivo
+        INTEGER os_id FK
+        INTEGER usuario_id FK
+        TEXT registrada_em
+    }
+    DIAGNOSTICO {
+        INTEGER id PK
+        INTEGER os_id FK, UK
+        INTEGER tecnico_id FK
+        TEXT descricao
+        TEXT procedimento
+        TEXT registrado_em
+    }
+    DIAGNOSTICO_PECA {
+        INTEGER diagnostico_id PK, FK
+        INTEGER peca_id PK, FK
+        INTEGER quantidade
+    }
+    ORCAMENTO {
+        INTEGER id PK
+        INTEGER os_id FK, UK
+        INTEGER criado_por FK
+        TEXT criado_em
+        TEXT decisao
+        INTEGER decidido_por FK
+        TEXT decidido_em
+    }
+    ORCAMENTO_SERVICO {
+        INTEGER id PK
+        INTEGER orcamento_id FK
+        TEXT descricao
+        INTEGER valor_centavos
+    }
+    ORCAMENTO_PECA {
+        INTEGER orcamento_id PK, FK
+        INTEGER peca_id PK, FK
+        INTEGER quantidade
+        INTEGER preco_unit_centavos
+    }
+    SERVICO_REALIZADO {
+        INTEGER id PK
+        INTEGER os_id FK
+        INTEGER usuario_id FK
+        TEXT descricao
+        TEXT registrado_em
+    }
+    PECA_UTILIZADA {
+        INTEGER id PK
+        INTEGER os_id FK
+        INTEGER peca_id FK
+        INTEGER quantidade
+        INTEGER movimentacao_id FK, UK
+        TEXT registrada_em
+    }
+    CONCLUSAO_TECNICA {
+        INTEGER os_id PK, FK
+        INTEGER tecnico_id FK
+        TEXT observacao_final
+        TEXT concluida_em
+    }
+    PAGAMENTO {
+        INTEGER id PK
+        INTEGER os_id FK, UK
+        INTEGER valor_centavos
+        TEXT forma
+        INTEGER usuario_id FK
+        TEXT registrado_em
+    }
+    ENTREGA {
+        INTEGER id PK
+        INTEGER os_id FK, UK
+        TEXT recebido_por
+        INTEGER usuario_id FK
+        TEXT registrada_em
+    }
+
+    CLIENTE ||--o{ EQUIPAMENTO : possui
+    EQUIPAMENTO ||--o{ ORDEM_SERVICO : recebe
+    USUARIO ||--o{ ORDEM_SERVICO : abre
+    USUARIO o|--o{ ORDEM_SERVICO : "tecnico atribuido"
+    ORDEM_SERVICO ||--o{ HISTORICO_STATUS : possui
+    USUARIO ||--o{ HISTORICO_STATUS : registra
+    ORDEM_SERVICO ||--o{ OBSERVACAO : possui
+    USUARIO ||--o{ OBSERVACAO : registra
+    PECA ||--o{ MOVIMENTACAO : movimenta
+    USUARIO ||--o{ MOVIMENTACAO : registra
+    ORDEM_SERVICO o|--o{ MOVIMENTACAO : "pode estar vinculada"
+    ORDEM_SERVICO ||--o| DIAGNOSTICO : possui
+    USUARIO ||--o{ DIAGNOSTICO : realiza
+    DIAGNOSTICO ||--o{ DIAGNOSTICO_PECA : lista
+    PECA ||--o{ DIAGNOSTICO_PECA : indicada
+    ORDEM_SERVICO ||--o| ORCAMENTO : recebe
+    USUARIO ||--o{ ORCAMENTO : cria
+    USUARIO o|--o{ ORCAMENTO : decide
+    ORCAMENTO ||--o{ ORCAMENTO_SERVICO : detalha
+    ORCAMENTO ||--o{ ORCAMENTO_PECA : detalha
+    PECA ||--o{ ORCAMENTO_PECA : cotada
+    ORDEM_SERVICO ||--o{ SERVICO_REALIZADO : registra
+    USUARIO ||--o{ SERVICO_REALIZADO : executa
+    ORDEM_SERVICO ||--o{ PECA_UTILIZADA : consome
+    PECA ||--o{ PECA_UTILIZADA : utilizada
+    MOVIMENTACAO ||--o| PECA_UTILIZADA : origina
+    ORDEM_SERVICO ||--o| CONCLUSAO_TECNICA : possui
+    USUARIO ||--o{ CONCLUSAO_TECNICA : conclui
+    ORDEM_SERVICO ||--o| PAGAMENTO : possui
+    USUARIO ||--o{ PAGAMENTO : registra
+    ORDEM_SERVICO ||--o| ENTREGA : possui
+    USUARIO ||--o{ ENTREGA : registra
